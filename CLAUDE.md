@@ -78,38 +78,78 @@ CSS als Kommentar hinterlegt.
 
 ### Farbe
 
-Die Seite ist **durchgehend dunkel**. Das ist keine Modeentscheidung: das Material
-des Betriebs ist anthrazitfarbenes Blech gegen Himmel, und die Projektfotos sowie
-das Hero-Foto leben davon. Ein heller Grund hätte sie zu Briefmarken gemacht. Ein
-Umschalter existiert bewusst nicht, es gibt nur diese eine Welt.
+Die Farbwelt kommt **aus dem Logo des Betriebs**, nicht aus einem Baukasten. Alle
+Rotwerte sind aus der Logodatei ausgezählt, nicht geschätzt: die Wortmarke liegt
+bei `#780008` (tiefes Weinrot), das Streifenmuster am unteren Logorand bei
+`#903020` (Terrakotta), der Untertitel im neutralen Grau zwischen `#909090` und
+`#C0C0C0`.
+
+Die Seite ist **überwiegend hell**, weil das Logo einen weißen Grund hat. Solange
+die Seite dunkel war, brauchte das Logo in der Kopfzeile eine weiße Karte mit
+Schatten, sonst wirkte es wie aufgeklebt. Mit dem hellen Cremeweiß entfällt dieser
+Notbehelf ersatzlos, das Logo sitzt direkt auf dem Grund. Ein Umschalter existiert
+bewusst nicht, es gibt nur diese eine Welt.
+
+**Dunkel bleiben genau drei Stellen**, als Kontrastanker über die Seitenlänge
+verteilt: der Hero oben, der Sturmschadenblock in der Mitte, die Fusszeile unten.
+
+#### Helle Flächen
+
+| Token | Hex | Rolle | Zweck |
+| --- | --- | --- | --- |
+| `--color-kalk` | `#FAF7F4` | `bg` | Grund. Warmes Cremeweiß, kein reines Weiß. |
+| `--color-blatt` | `#FFFFFF` | — | hellste Fläche: Eingabefelder auf Putz |
+| `--color-putz` | `#F2EBE5` | `surface` | abgesetzte Fläche: Karten, Ablesung, Formular |
+| `--color-lasur` | `#F7EAE6` | `brand-tint` | rötlich getönte Fläche, aktive Zustände |
+| `--color-linie` | `#E3D9D0` | — | Trennlinie |
+| `--color-kante` | `#D3C5B9` | — | kräftigerer Rahmen. **Nie für Text.** |
+
+#### Text auf hellem Grund
 
 | Token | Hex | Rolle | Kontrast |
 | --- | --- | --- | --- |
-| `--color-bitumen` | `#14181A` | Grund. Bitumenbahn, nicht reines Schwarz. | — |
-| `--color-zink` | `#21272B` | erhöhte Fläche, eine Bahn auf dem Dach | — |
-| `--color-linie` | `#333C42` | Trennlinien, Rahmen | — |
-| `--color-falz` | `#5C676D` | Falzkamm, Licht auf der Kante. **Nie für Text.** | — |
-| `--color-schiefer` | `#8F9AA0` | Etiketten und Kleintext | 6,21:1 Bitumen, 5,25:1 Zink |
-| `--color-kreide` | `#A5B0B5` | Sekundärtext | 8,06:1 auf Bitumen |
-| `--color-zinkweiss` | `#E8ECEC` | Primärtext | 15,01:1 auf Bitumen |
-| `--color-patina` | `#4FB79E` | **einziger Akzent**, Kupferpatina | 7,32:1 in beide Richtungen |
-| `--color-ziegel` | `#D2684A` | **nur** der Sturmschaden-Notfallblock | 4,95:1 in beide Richtungen |
-| `--color-ziegel-tief` | `#2E1610` | Grund unter Ziegelrot | Ziegel darauf: 4,70:1 |
+| `--color-russ` | `#1E1714` | `ink` | 16,56:1 auf Kalk, 14,98:1 auf Putz |
+| `--color-graphit` | `#5C554F` | `neutral-700` | 6,86:1 auf Kalk, 6,20:1 auf Putz |
+| `--color-schiefer` | `#6E6660` | `neutral-600` | 5,27:1 auf Kalk, 4,77:1 auf Putz |
 
-`--color-falz` und `--color-schiefer` sehen ähnlich aus, haben aber getrennte
-Aufgaben. Falz ist der Lichtreflex auf einer Blechkante und erreicht als Text nur
-3,08:1. Es gehört an Linien, Rahmen und Verläufe, nie an Schrift. Für gedämpften
-Kleintext gibt es Schiefer.
+`--color-russ` dient zugleich als **dunkler Grund** für den Hero.
 
-`--color-patina` ist so gewählt, dass es in **beide** Richtungen AA erfüllt: als Text
-auf dunklem Grund und als Flächenfarbe mit dunklem Text darauf. Deshalb genügt ein
-einziger Akzent-Token für Links, aktive Zustände und gefüllte Schaltflächen.
+#### Text und Akzent auf dunklem Grund
 
-**Ziegelrot ist kein zweiter Akzent.** Es hat genau eine Aufgabe: den Notfallblock
-bei Sturmschaden. Sonst kommt es nirgends vor. Bis Version 2 dieser Seite markierte
-Ziegelrot zusätzlich noch offene `[[BESTÄTIGEN: …]]`-Platzhalter sichtbar im
-Text. Das ist bewusst abgeschaltet, seit die Seite als Vorschau an den Kunden
-geht, siehe Abschnitt 7.5 und Regel 3 in Abschnitt 11.
+| Token | Hex | Rolle | Kontrast |
+| --- | --- | --- | --- |
+| `--color-kreide` | `#C9C1BA` | Sekundärtext auf dunkel | 9,95:1 auf Russ, 9,33:1 auf Ziegel-tief |
+| `--color-ziegel-hell` | `#D9705A` | Akzent auf dunkel | 5,40:1 auf Russ, 5,06:1 auf Ziegel-tief |
+
+`--color-ziegel-hell` erreicht auf **hellem** Grund nur 3,07:1 und darf dort
+niemals als Text stehen. Es existiert ausschließlich für die drei dunklen Flächen.
+
+#### Marke
+
+| Token | Hex | Rolle | Kontrast |
+| --- | --- | --- | --- |
+| `--color-ziegel` | `#7D0A12` | `brand` | 10,23:1 auf Kalk, weiße Schrift darauf 10,91:1 |
+| `--color-ziegel-tief` | `#42070B` | `brand-dark` | 15,53:1 gegen Kalk |
+| `--color-terrakotta` | `#9A3A26` | `brand-alt` | 6,54:1 auf Kalk, weiße Schrift darauf 6,98:1 |
+
+`--color-ziegel` ist so gewählt, dass es in **beide** Richtungen AA erfüllt: als
+Text auf hellem Grund und als Flächenfarbe mit heller Schrift darauf. Deshalb
+genügt ein einziger Akzent-Token für Links, aktive Zustände, Fokusringe und
+gefüllte Schaltflächen.
+
+`--color-ziegel-tief` trägt die Fusszeile und den Sturmschadenblock.
+
+`--color-terrakotta` stammt aus dem Streifenmuster und ist für **Flächen**
+reserviert, nicht für Kleintext. Verworfen wurden bewusst `#B4553C` (4,13:1 auf
+Putz) und `#7D756E` (4,24:1 auf Kalk): beide fallen als Text durch.
+
+#### Was nicht Markenrot sein darf
+
+Die acht Schichten im Dachaufbau-Explorer tragen **materialtreue Eigentöne**
+(Blechanthrazit, Fichte, Membranblau, Dämmgelb, Konstruktionsholz, Gipskarton) und
+liegen in `src/data/dachaufbau.ts`. Markenrot ist dort allein der **aktiven
+Auswahl** vorbehalten, sonst verwischt die Bedeutung von „ausgewählt" mit der
+Bedeutung „Markenfarbe".
 
 ### Typografie
 
@@ -144,7 +184,7 @@ Leistungen, 1,35 / 1 beim Rechner), nie ein Dreiklang gleicher Karten.
 │▓ Kopfzeile: Marke · Navigation · Telefon · Anfrage  │  fix, 68 px
 ├─────────────────────────────────────────────────────┤
 │█                                                    │
-│█   HERO, ein Viewport hoch, Vollbild-Foto           │
+│▓▓  HERO, ein Viewport hoch, Vollbild-Foto  (dunkel) │
 │█   Parallaxe, Glanzzug, Eintritt beim Laden         │
 │█                                                    │
 │█   Dicht ist keine Meinung.                         │
@@ -171,15 +211,16 @@ Leistungen, 1,35 / 1 beim Rechner), nie ein Dreiklang gleicher Karten.
 ├─────────────────────────────────────────────────────┤
 │█  Wie es abläuft. 01 bis 06                         │
 ├─────────────────────────────────────────────────────┤
-│█  ⚡ Sturmschaden (einziger Ziegelrot-Block)         │
+│▓▓ ⚡ Sturmschaden (dunkler Rotbraun-Block)           │
 ├─────────────────────────────────────────────────────┤
 │█  Einsatzgebiet: Radiusdarstellung, keine Karte     │
 ├─────────────────────────────────────────────────────┤
 │█  Kontakt: Wege links, Formular rechts              │
 ├─────────────────────────────────────────────────────┤
-│▓ Fusszeile                                          │
+│▓▓ Fusszeile (dunkel, mit Streifenband obenauf)      │
 └─────────────────────────────────────────────────────┘
  ▲ linke Spalte: der Falz, geschlossen bis zur Leseposition
+ ▓▓ die drei bewusst dunklen Flaechen, sonst heller Grund
 ```
 
 ### Signature
@@ -193,6 +234,10 @@ liegt, steht noch als stumpfer Steg offen. **Wer die Seite liest, falzt sie zu.*
 Angetrieben ausschliesslich von CSS `animation-timeline: scroll()`. Kein JavaScript,
 kein Scroll-Listener. Wo der Browser das nicht kann, steht der Falz fertig
 geschlossen da und sieht genauso beabsichtigt aus.
+
+Mit dem hellen Grund kehrt sich die Lichtführung um: nicht mehr ein heller Grat
+zwischen zwei schwarzen Schatten, sondern ein weißer Grat zwischen zwei warmen
+Schattenkanten, die sich vom Cremeweiß abheben. Die Falzzange läuft in Markenrot.
 
 ---
 
@@ -405,7 +450,16 @@ in `vercel.json` als `permanent` (301), zusammen mit `/datenschultz.html`.
 - Projekte ebenso zweistufig: `ProjekteVorschau.astro` auf der Startseite (drei
   stille Fotokarten, kein Skript), voller Vergleich weiterhin auf `/projekte`.
 - Dachaufbau-Explorer, Prozess, Sturmschaden, Einsatzgebiet.
-- Logo im Header, echtes Firmenlogo statt Platzhalter-Wortmarke.
+- Logo im Header, echtes Firmenlogo statt Platzhalter-Wortmarke. Der Weisspunkt
+  der Logodatei ist exakt auf `--color-kalk` gezogen, damit sich kein hellerer
+  Kasten vom Seitengrund abhebt.
+- **Farbwelt aus dem Logo**, siehe Abschnitt 4: helles Cremeweiss statt
+  Bitumenschwarz, Weinrot aus der Wortmarke statt Kupferpatina als Akzent, drei
+  bewusst dunkle Kontrastanker (Hero, Sturmschaden, Fusszeile), Streifenband aus
+  dem Logo ueber der Fusszeile.
+- Kontrast maschinell geprueft: ein Skript geht jeden sichtbaren Textknoten aller
+  neun Seiten durch und rechnet ihn gegen seinen tatsaechlich gerenderten
+  Hintergrund. Null Unterschreitungen von WCAG AA.
 - Unterseiten: `/leistungen`, `/leistungen/[slug]` (9 Stück), `/projekte`,
   `/kostenrechner`, `/impressum`, `/datenschutz`, `/404`.
 - `vercel.json`: `cleanUrls: true`, ohne das liefen alle Unterseiten in ein
@@ -442,7 +496,12 @@ in `vercel.json` als `permanent` (301), zusammen mit `/datenschultz.html`.
    sichtbar (auf Kundenwunsch abgeschaltet, Abschnitt 7.5). Offene Punkte trotzdem
    immer als `[[BESTÄTIGEN: …]]` schreiben, nie eine Zahl direkt erfinden, nur weil
    sie nicht mehr rot auffällt.
-4. Ziegelrot bleibt dem Notfallblock vorbehalten.
+4. Markenrot (`--color-ziegel`) ist der einzige Akzent: Links, aktive Zustände,
+   Fokusringe, gefüllte Schaltflächen. `--color-terrakotta` bleibt Flächen und dem
+   Streifenband vorbehalten, nie Kleintext. `--color-ziegel-hell` **nur** auf den
+   drei dunklen Flächen, auf hellem Grund erreicht es keine 4,5:1.
+   Im Dachaufbau-Explorer bleibt Markenrot der aktiven Auswahl vorbehalten, die
+   Schichten selbst tragen materialtreue Eigentöne.
 5. Neue Bewegung nur mit `prefers-reduced-motion`-Zweig und ohne `scroll`-Listener.
    Ein `pointermove`-Listener wie in `heroInit.ts` ist in Ordnung, ein
    `scroll`-Listener nicht, dafür gibt es `scrollFortschritt.ts`.

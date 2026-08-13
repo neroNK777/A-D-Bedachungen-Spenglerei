@@ -1,130 +1,168 @@
-# Gestaltungsnotizen
+# Notizen
 
-Was probiert und wieder verworfen wurde, damit spätere Sessions nicht dieselben
-Runden drehen.
+## Farbumstellung auf die Markenfarben des Logos
 
----
+### Warum
 
-## Die drei verbotenen Muster
+Bis Version 3 war die Seite durchgehend dunkel: Bitumenschwarz als Grund,
+Kupferpatina (Türkis) als einziger Akzent. Diese Palette entstand, bevor das
+echte Logo des Kunden vorlag. Das Logo ist eindeutig hell — weißer Grund,
+tiefes Weinrot für Dach-Icon und Wortmarke, neutrales Grau für den Untertitel,
+darunter ein gestreiftes Ziegelmuster in Terrakotta-Abstufungen. Die Seite hat
+sich dem Logo anzupassen, nicht umgekehrt.
 
-Der Auftrag nennt drei ausgelatschte KI-Muster. Zur Kontrolle hier, was stattdessen
-passiert ist:
+### Gemessene Logo-Farben
 
-| Verbotenes Muster | Warum es nahegelegen hätte | Was stattdessen kam |
+Nicht geschätzt, sondern mit sharp aus den Bilddateien ausgezählt
+(Quantisierung auf 8er- bzw. 16er-Raster, reines Weiß übersprungen).
+
+| Quelle | Ton | Anmerkung |
 | --- | --- | --- |
-| Creme + Serifen-Display + Terrakotta | Handwerk, Ziegel, Bodenständigkeit: das ist der Reflex für jedes Handwerkerbriefing | Bitumenschwarz mit Kupferpatina. Ziegelrot existiert, aber nur als Notfallsignal, nicht als Grundakzent |
-| Fast-Schwarz + Neonakzent | Die Seite ist dunkel, der Schritt zu Neongrün wäre klein | Patina ist mit 42 Prozent Sättigung eine Materialfarbe, kein Leuchtmittel. Kein einziger Glow, keine `box-shadow` in Akzentfarbe ausser am Falzwerkzeug |
-| Broadsheet, Haarlinien, Radius null | Präzision und Technik legen es nahe | Radius 3 px durchgehend, Trennlinien nur, wo sie etwas trennen, und eine gestreckte Grotesk statt einer Redaktionsserife |
+| Wortmarke und Dach-Icon | `#780008`, `#780010`, `#800010` | dominanter Ton, tiefes Weinrot |
+| Streifenmuster unten | `#903020` | Terrakotta, häufigster Streifenton |
+| Streifenmuster unten | `#800000`, `#801000` | dunkle Streifen |
+| Untertitel | `#909090` bis `#c0c0c0` | neutrales Grau, kein Blaustich |
+| Untertitel, dunkelste Stelle | `#303030` | |
 
----
+Der Auftrag nannte die Spanne `#7A2416` bis `#901000`. Die Messung bestätigt
+beides, aber an **verschiedenen Stellen**: das Terrakotta `#7A2416`/`#903020`
+gehört zum Streifenmuster, die Wortmarke selbst ist mit `#780008` deutlich
+tiefer und weniger orange. Das Markenrot der Seite folgt deshalb der
+Wortmarke, das Terrakotta bleibt dem Streifenelement und Sekundärflächen
+vorbehalten.
 
-## Verworfen
+### Inventur: wo die alte Palette überall sitzt
 
-### Isometrische Explosionszeichnung für den Dachaufbau
+Stand vor der Umstellung. Tokens sind in `src/styles/global.css` unter
+`@theme` definiert, alle Verwendungen laufen bereits über Tokens — es gibt
+praktisch keine hartkodierten Farben in Komponenten, was die Umstellung stark
+vereinfacht.
 
-Erste Idee: die acht Schichten in 3D auffächern, `rotateX(58deg) rotateZ(-38deg)`.
-Sah nach Produktrendering aus, nicht nach Handwerk, und die Beschriftung wäre bei
-gedrehten Ebenen entweder schief oder unlesbar gewesen. Ein **Schnitt** ist das, was
-ein Dachdecker tatsächlich zeichnet, wenn er einem Bauherrn den Aufbau erklärt.
-Ausserdem billiger zu rendern und ohne 3D-Rechnerei responsiv.
+**Token-Verwendungen insgesamt**
 
-### Materialwähler als eigene Sektion
+| Token | Hex alt | Treffer |
+| --- | --- | --- |
+| `--color-patina` | `#4FB79E` | 64 |
+| `--color-kreide` | `#A5B0B5` | 51 |
+| `--color-linie` | `#333C42` | 41 |
+| `--color-bitumen` | `#14181A` | 28 |
+| `--color-schiefer` | `#8F9AA0` | 28 |
+| `--color-zink` | `#21272B` | 21 |
+| `--color-zinkweiss` | `#E8ECEC` | 14 |
+| `--color-ziegel` | `#D2684A` | 13 |
+| `--color-falz` | `#5C676D` | 7 |
+| `--color-zink-hell` | `#2A3237` | 4 |
+| `--color-patina-tief` | `#1C3B36` | 3 |
+| `--color-ziegel-tief` | `#2E1610` | 2 |
 
-Stand als Option im Auftrag. Verworfen, weil er sich mit dem Kostenrechner
-überschnitten hätte: dort wird das Material ohnehin gewählt, und die Angaben
-(Lebensdauer, Preisniveau) sind dort am Auswahlpunkt nützlicher als in einer
-Extrasektion. Lebensdauer steht jetzt direkt an der Materialwahl im Rechner. Lieber
-vier Interaktionen, die sitzen, als fünf, die sich gegenseitig wiederholen.
+**Dateien, nach Trefferzahl**
 
-### Alternierendes Zickzack bei den Projekten
+| Treffer | Datei |
+| --- | --- |
+| 59 | `src/styles/global.css` |
+| 38 | `src/components/Kontakt.astro` |
+| 32 | `src/components/Kostenrechner.astro` |
+| 15 | `src/components/Einsatzgebiet.astro` |
+| 14 | `src/components/Fusszeile.astro` |
+| 11 | `src/pages/leistungen/[slug].astro` |
+| 11 | `src/components/Sturmschaden.astro` |
+| 11 | `src/components/Hero.astro` |
+| 10 | `src/pages/leistungen/index.astro` |
+| 10 | `src/components/VergleichSchieber.astro` |
+| 10 | `src/components/Leistungen.astro` |
+| 9 | `src/components/DachaufbauExplorer.astro` |
+| 8 | `src/components/KostenrechnerVorschau.astro` |
+| 8 | `src/components/Kopfzeile.astro` |
+| 6 | `src/components/MobilLeiste.astro` |
+| 5 | `src/components/ProjekteVorschau.astro` |
+| 4 | `src/components/VorherNachher.astro` |
+| 4 | `src/components/Prozess.astro` |
+| 2 | `src/pages/404.astro` |
 
-Bild links / Text rechts, dann umgekehrt. Bei vier Projekten wären das vier
-Wechsel gewesen, das liest sich als Füllmaterial. Jetzt liegen alle vier gleich
-aufgebaut untereinander, Schieber über die volle Breite, Daten darunter. Eine Liste
-gleichartiger Dinge darf gleich aussehen.
+**Hartkodierte Farben außerhalb von `global.css`**
 
-### Drei gleiche Leistungskarten
+| Stelle | Wert | Zweck |
+| --- | --- | --- |
+| `src/components/Kopfzeile.astro:80` | `#fff` | weiße Karte unter dem Logo, nur nötig, weil der Grund dunkel ist |
+| `src/layouts/Grundlayout.astro:41` | `#14181A` | `theme-color` für die Browserleiste |
+| `src/data/dachaufbau.ts` | 8 Werte | Materialfarben der Schichten, siehe unten |
 
-Der Standardgriff. Neun Leistungen als Karten wären ein Raster aus neun identischen
-Kästen geworden. Jetzt: zwei fachliche Gruppen (Dachdeckerei, Spenglerei) mit
-ungleich breiten Spalten und einem echten Foto als dritter, schmalerer Spalte.
-Sturmschaden ist aus der Liste heraus und hat eine eigene Sektion, weil er
-Notfallcharakter hat.
+**Sonderfälle, die nicht per Token erledigt sind**
 
-### Eingebettete Karte im Einsatzgebiet
+- **Falz** (`global.css`, Signaturelement am linken Rand): arbeitet mit
+  `color-mix` gegen Schwarz und Weiß, um eine Blechkante zu simulieren
+  (Schatten / Grat / Schatten). Die Logik „heller Grat auf dunklem Grund"
+  kehrt sich auf hellem Grund um und muss neu gedacht werden.
+- **Einsatzgebiet** (SVG-Radiusdarstellung): `stroke="var(--color-linie)"` an
+  drei Stellen, läuft über Tokens.
+- **Dachaufbau-Explorer**: acht Schichtfarben in `src/data/dachaufbau.ts`,
+  alle für dunklen Grund gewählt. `Innenbekleidung` (`#c9c6bd`) erreicht auf
+  hellem Grund nur 1,60:1 und verschwindet, `Dämmung` (`#8a7a52`) ist ein
+  stumpfes Braun statt des typischen Dämmgelbs.
+- **Favicon** (`public/favicon.png`): weißer Grund, rotes Icon — passt
+  bereits zum hellen Schema, keine Änderung nötig.
+- **OG-Bild** (`public/media/og-bild.jpg`): Standbild aus dem inzwischen
+  gelöschten Hero-Video, palettenneutral, aber nicht die eigene Arbeit des
+  Betriebs.
 
-Google Maps hätte eine Einwilligung gebraucht, eine Zwei-Klick-Lösung wäre eine
-graue Fläche mit Knopf gewesen. Die Frage des Besuchers lautet ohnehin nicht "wo
-liegt Augsburg", sondern "kommen die zu mir". Deshalb eine gerechnete
-Radiusdarstellung: echte Entfernungen, echte Himmelsrichtungen, drei Ringe, daneben
-dieselben Orte als Liste für alle, die kein SVG lesen wollen.
+### Was geändert wurde
 
-### Textpräfix an jeder Platzhaltermarke
+**Entscheidung: helles Grundgerüst.** Nicht nur, weil das Logo weiß ist, sondern
+weil der bisherige dunkle Grund einen sichtbaren Notbehelf erzwang: das Logo saß
+in einer weißen Karte mit Schatten, damit sein weißer Grund nicht wie aufgeklebt
+wirkte. Mit dem Cremeweiß entfällt diese Karte ersatzlos. Dunkel bleiben genau
+drei Stellen als Kontrastanker: Hero oben, Sturmschadenblock in der Mitte,
+Fusszeile unten.
 
-Erste Fassung schrieb `ZU BESTÄTIGEN:` vor jeden Platzhalter. Bei vier Feldern pro
-Projekt mal vier Projekten war die Sektion zugekleistert und man sah das Layout
-nicht mehr. Jetzt: gestrichelter Rahmen in Ziegelrot, dazu **ein** Hinweis über der
-Liste. Genauso auffindbar, ohne die Gestaltung zu ersticken.
+**Tokensystem neu, nicht Suchen-und-Ersetzen.** Die alten Namen beschrieben eine
+dunkle Welt (Bitumen, Zink, Patina) und wären als Etikett auf hellen Werten
+irreführend gewesen. Umbenannt wurde deshalb rollenweise, mit Platzhaltern in
+zwei Durchgängen, damit sich die Muster nicht gegenseitig überschreiben (das alte
+`--color-ziegel` wurde zu `--color-terrakotta`, bevor `--color-patina` den frei
+gewordenen Namen `--color-ziegel` bekam). 267 Verwendungen in 19 Dateien, danach
+null Reste alter Namen. Auch die Klassennamen wurden nachgezogen:
+`.knopf--patina` → `.knopf--marke`, `.knopf--ziegel` → `.knopf--terrakotta`.
 
-### 16:11 und 3:2 für den Vorher-Nachher-Schieber
+**Stellen, an denen die mechanische Umbenennung zwangsläufig falsch lag** und die
+einzeln nachgezogen wurden:
 
-Beide Formate haben genau das Dach weggeschnitten. Die gelieferten Fotos sind
-nahezu quadratisch, das Dach liegt in der unteren Bildhälfte. Ein breites Fenster
-lässt vom Quadrat nur den mittleren Streifen übrig, und der ist Himmel. Jetzt 4:3
-mit `object-position: center 88%` und maximal 54 rem breit, damit ein Vergleich auf
-dem Schreibtisch ganz ins Fenster passt.
+| Stelle | Problem | Lösung |
+| --- | --- | --- |
+| Hero-Schleier | wurde zu einem hellen Schleier über dunklem Foto | zurück auf `--color-russ` |
+| Hero-Glanzzug | dunkler statt heller Lichtstreifen | zurück auf `--color-blatt` |
+| Hero-Text | dunkle Schrift auf dunklem Foto | `--color-kalk` / `--color-kreide` |
+| Rand-Knopf im Hero | für hellen Grund gebaut, verschwand im Foto | eigene Werte im Hero |
+| Trennkante im Vergleichsschieber | wurde dunkel und unsichtbar auf den Fotos | zurück auf `--color-blatt` |
+| Fusszeile, Sturmschaden | hell geworden, sollten Kontrastanker sein | dunkel, mit Dunkelgrund-Tokens |
 
----
+**Zwei echte Fehler, im Test gefunden:**
 
-## Fallen, die Zeit gekostet haben
+- Der WhatsApp-Knopf im Sturmschadenblock hatte keinen Rahmen: `.knopf--rand-hell`
+  setzte nur `border-color`, ohne `border-width` und `border-style`. Die Klasse
+  erbt nichts von `.knopf--rand`, also gab es gar keinen Rand.
+- Das Streifenband über der Fusszeile wirkte fleckig statt gestreift: bei fast
+  waagerechten Linien passt in 12 px Bandhöhe keine volle Wiederholung. Jetzt
+  leicht geneigte Senkrechte, was zugleich die Stehfalz-Sprache der Seite trifft.
 
-### Astros responsive Bildstile überschreiben die eigene Box
+**Dachaufbau-Explorer.** Die acht Schichten haben materialtreue Eigentöne
+bekommen; Markenrot bleibt allein der aktiven Auswahl. Zwei Werte mussten ohnehin
+geändert werden: `Innenbekleidung` (`#C9C6BD`) erreichte auf hellem Grund nur
+1,60:1 und verschwand, `Dämmung` war ein stumpfes Braun statt Dämmgelb. Der
+aktive Zustand hellt nicht mehr auf, sondern kräftigt die Farbe — Aufhellen hätte
+Dämmgelb und Gipskarton auf hellem Grund ausgebleicht.
 
-`image.responsiveStyles: true` setzt per Attributselektor `height: auto` und das
-Seitenverhältnis der Quelle. Das gewinnt gegen eigene Klassen und macht jede Box mit
-festem Format kaputt: das Bild wird höher als der Rahmen und oben abgeschnitten,
-`object-position` läuft ins Leere. Jetzt `responsiveStyles: false`, jedes Bild
-bekommt sein Format in der Komponente.
+**Signature.** Das Streifenmuster sitzt an genau einer Stelle: als 12 px hohes
+Band über der Fusszeile. Der Falz am linken Rand bleibt das Hauptsignature, seine
+Lichtführung ist umgekehrt (weißer Grat zwischen warmen Schattenkanten statt
+hellem Grat zwischen schwarzen Schatten).
 
-### Gitterzeile ohne feste Höhe
+**Favicon und OG-Bild.** Das Favicon passte bereits (weißer Grund, rotes Icon) und
+blieb unverändert. Das OG-Bild war ein Standbild aus dem gelöschten Hero-Video und
+zeigte nicht die eigene Arbeit des Betriebs; es zeigt jetzt das echte
+Walmdach-Projekt mit dem Streifenband als unterem Abschluss.
 
-`display: grid` mit einer Fläche, `aspect-ratio` auf dem Container und `height: 100%`
-auf den Kindern: die Zeile richtet sich nach dem Eigenformat des Bildes, `height:
-100%` wird zirkulär und fällt auf `auto` zurück. Das Kind wird höher als der
-Container und `overflow: hidden` schneidet oben ab, statt dass `object-fit` greift.
-Betraf den Vergleichsschieber sichtbar und den Hero unbemerkt. Heilmittel:
-`grid-template-rows: 100%`.
-
-### `.abschnitt` auf einer Sticky-Sektion
-
-Der Dachaufbau-Explorer trug die allgemeine Sektionsklasse mit bis zu 144 px
-Aussenabstand. Dadurch begann die Strecke erst 144 px tiefer, die Bühne rastete spät
-am Fensterrand ein und der Text stand halb unter der Kante. Sticky-Sektionen tragen
-ihren Abstand selbst, in der Bühne.
-
-### Der Hero passt nicht überall
-
-Bei 360 × 640 fasst ein gepinnter Dachaufbau die Erklärung nicht mehr, egal wie eng
-man setzt. Statt Schrift kaputtzuschrumpfen: unter `max-height: 700px` und schmal
-läuft die Sektion normal mit, der Aufbau liegt von Anfang an offen, erkunden geht
-weiter per Tipp. Dieselbe Abfrage steht im CSS und im Skript.
-
----
-
-## Bewusste Entscheidungen, die wie Fehler aussehen könnten
-
-- **Kein `<video>` im Hero.** Der allgemeine Auftrag verlangt eines, die
-  Tutorial-Datei verbietet es. Laut Auftrag gewinnt die Tutorial-Datei. Steht in
-  CLAUDE.md, Abschnitt 5, zum Gegenlesen.
-- **Nur dunkel, kein Umschalter.** Das Material ist anthrazitfarbenes Blech gegen
-  Himmel. Eine helle Variante hätte die beiden Fotos und den Zeitraffer zu
-  Briefmarken gemacht.
-- **Nummern in der Prozess-Timeline.** Sonst sind Abschnittsnummern Deko. Hier
-  existiert die Reihenfolge wirklich: Schritt 4 ohne Schritt 3 gibt es nicht.
-- **`aria-hidden` auf der Erklärtafel des Dachaufbaus.** Der Scroll wechselt die
-  Schicht bis zu achtmal. Als Live-Region hätte das jede Vorlesehilfe zugetextet.
-  Der vollständige Text hängt stattdessen an der jeweiligen Schaltfläche, wo er beim
-  Durchtabben genau einmal vorgelesen wird.
-- **Beschriftungen im Vergleichsschieber liegen auf dem Bild.** Sonst ein Tell, hier
-  Bedienelement: sie sagen, welche Hälfte welche ist, und müssen deshalb an der
-  Trennkante sitzen.
+**Kontrollen.** Ein Skript prüft jeden sichtbaren Textknoten aller neun Seiten
+gegen seinen tatsächlich gerenderten Hintergrund, inklusive Alpha-Überlagerung und
+der Unterscheidung von Gross- und Kleintext: **null Unterschreitungen von WCAG
+AA**. `npm run build` läuft ohne Warnung durch, keine Konsolen- oder
+Netzwerkfehler in Playwright.

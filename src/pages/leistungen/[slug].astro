@@ -32,7 +32,7 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
             <p class="kopfblock__zeile">{leistung.text}</p>
 
             <div class="kopfblock__aktionen">
-              <a class="knopf knopf--patina" href="#kontakt">Anfrage stellen</a>
+              <a class="knopf knopf--marke" href="#kontakt">Anfrage stellen</a>
               <a class="knopf knopf--rand" href="/kostenrechner">Kosten überschlagen</a>
             </div>
           </div>
@@ -91,7 +91,7 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
     margin-bottom: 2rem;
   }
   .brotkrume a:hover {
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
 
   .kopfblock__innen {
@@ -110,7 +110,7 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
   }
   .kopfblock__zeile {
     max-width: 58ch;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   .kopfblock__aktionen {
@@ -121,7 +121,7 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
   }
 
   .umfang {
-    background: var(--color-zink);
+    background: var(--color-putz);
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     padding: clamp(1.25rem, 3vw, 1.9rem);
@@ -152,7 +152,7 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
     width: 1.05rem;
     height: 1.05rem;
     margin-top: 0.22rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
 
   .weitere {
@@ -184,12 +184,12 @@ const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
     transition: color 0.18s ease;
   }
   .weitere__liste a:hover {
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
   .weitere__liste :global(svg) {
     width: 1.15rem;
     height: 1.15rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
 
   @media (min-width: 55rem) {

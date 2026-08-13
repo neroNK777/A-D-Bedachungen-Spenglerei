@@ -104,10 +104,33 @@ const spalten = [
 </footer>
 
 <style>
+  /* Die Fusszeile ist die zweite bewusst dunkle Flaeche der Seite. Sie
+     schliesst den hellen Verlauf unten ab und traegt die Dunkelgrund-Tokens. */
   .fuss {
-    border-top: 1px solid var(--color-linie);
+    position: relative;
     padding-block: clamp(3rem, 6vw, 5rem) 2.5rem;
-    background: var(--color-bitumen);
+    background: var(--color-ziegel-tief);
+    color: var(--color-kreide);
+  }
+
+  /* Das Streifenband: das einzige Zitat des Ziegelmusters aus dem unteren
+     Logorand, an genau einer Stelle der Seite. Terrakotta-Grund mit flach
+     diagonalen, dunkleren Linien, so wie im Logo. Rein dekorativ. */
+  .fuss::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 12px;
+    background-color: var(--color-terrakotta);
+    /* Steil statt flach: in einem 12 Pixel hohen Band passt von fast
+       waagerechten Linien keine volle Wiederholung, das Muster wirkt dann
+       fleckig statt gestreift. Die leicht geneigte Senkrechte trifft
+       zugleich die Stehfalz-Sprache der uebrigen Seite. */
+    background-image: repeating-linear-gradient(
+      84deg,
+      transparent 0 7px,
+      color-mix(in srgb, var(--color-ziegel-tief) 62%, transparent) 7px 12px
+    );
   }
 
   .fuss__oben {
@@ -121,6 +144,7 @@ const spalten = [
     font-weight: 700;
     font-stretch: 115%;
     margin-bottom: 0.5rem;
+    color: var(--color-kalk);
   }
   .fuss__zeile {
     color: var(--color-kreide);
@@ -141,17 +165,17 @@ const spalten = [
     transition: color 0.18s ease;
   }
   .fuss__kontakt a:hover {
-    color: var(--color-patina);
+    color: var(--color-ziegel-hell);
   }
   .fuss__kontakt :global(svg) {
     width: 1rem;
     height: 1rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel-hell);
   }
 
   .fuss__zeiten {
     font-size: 0.86rem;
-    color: var(--color-schiefer);
+    color: color-mix(in srgb, var(--color-kreide) 78%, transparent);
   }
 
   .fuss__spalten {
@@ -166,7 +190,7 @@ const spalten = [
     font-stretch: 100%;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--color-schiefer);
+    color: color-mix(in srgb, var(--color-kreide) 78%, transparent);
     margin-bottom: 0.9rem;
   }
   .fuss__spalten ul {
@@ -179,7 +203,7 @@ const spalten = [
     transition: color 0.18s ease;
   }
   .fuss__spalten a:hover {
-    color: var(--color-zinkweiss);
+    color: var(--color-kalk);
   }
 
   .fuss__adressen {
@@ -187,7 +211,7 @@ const spalten = [
     gap: 0.5rem;
     margin-top: 3rem;
     padding-top: 1.75rem;
-    border-top: 1px solid var(--color-linie);
+    border-top: 1px solid color-mix(in srgb, var(--color-kreide) 22%, transparent);
     font-size: 0.9rem;
     color: var(--color-kreide);
   }
@@ -199,7 +223,7 @@ const spalten = [
     font-weight: 650;
     letter-spacing: 0.11em;
     text-transform: uppercase;
-    color: var(--color-schiefer);
+    color: color-mix(in srgb, var(--color-kreide) 78%, transparent);
   }
 
   .fuss__unten {
@@ -209,9 +233,9 @@ const spalten = [
     gap: 0.75rem 2rem;
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--color-linie);
+    border-top: 1px solid color-mix(in srgb, var(--color-kreide) 22%, transparent);
     font-size: 0.8rem;
-    color: var(--color-schiefer);
+    color: color-mix(in srgb, var(--color-kreide) 78%, transparent);
   }
   .fuss__hinweis {
     max-width: 46ch;

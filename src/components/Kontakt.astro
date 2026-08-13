@@ -192,7 +192,7 @@ const anliegen = [
         </label>
         <p class="fehler" data-fehler="datenschutz"></p>
 
-        <button type="submit" class="knopf knopf--patina absenden" data-kontakt-senden>
+        <button type="submit" class="knopf knopf--marke absenden" data-kontakt-senden>
           Anfrage stellen
         </button>
 
@@ -225,7 +225,7 @@ const anliegen = [
     margin-bottom: 1rem;
   }
   .kontakt__zeile {
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     max-width: 46ch;
   }
 
@@ -246,13 +246,13 @@ const anliegen = [
     transition: background-color 0.18s ease, padding-left 0.18s ease;
   }
   .kontakt__wege a:hover {
-    background: var(--color-zink);
+    background: var(--color-putz);
     padding-left: 0.5rem;
   }
   .kontakt__wege :global(svg) {
     width: 1.3rem;
     height: 1.3rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
   .kontakt__weg-titel {
     display: block;
@@ -264,7 +264,7 @@ const anliegen = [
   .kontakt__weg-zeile {
     display: block;
     font-size: 0.84rem;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     margin-top: 0.1rem;
   }
 
@@ -291,7 +291,7 @@ const anliegen = [
   /* Formular ------------------------------------------------------------ */
 
   .kontakt__formular {
-    background: var(--color-zink);
+    background: var(--color-putz);
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     padding: clamp(1.25rem, 3.5vw, 2.25rem);
@@ -307,18 +307,18 @@ const anliegen = [
   }
   .status[data-art='laeuft'] {
     border-color: var(--color-linie);
-    color: var(--color-kreide);
-    background: var(--color-bitumen);
+    color: var(--color-graphit);
+    background: var(--color-kalk);
   }
   .status[data-art='fehler'] {
-    border-color: color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    border-color: color-mix(in srgb, var(--color-terrakotta) 55%, transparent);
     background: var(--color-ziegel-tief);
-    color: var(--color-ziegel);
+    color: var(--color-terrakotta);
   }
   .status[data-art='fertig'] {
-    border-color: color-mix(in srgb, var(--color-patina) 55%, transparent);
-    background: var(--color-patina-tief);
-    color: var(--color-patina);
+    border-color: color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    background: var(--color-lasur);
+    color: var(--color-ziegel);
   }
 
   .paare {
@@ -344,8 +344,8 @@ const anliegen = [
 
   select.feld {
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, var(--color-kreide) 50%),
-      linear-gradient(135deg, var(--color-kreide) 50%, transparent 50%);
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-graphit) 50%),
+      linear-gradient(135deg, var(--color-graphit) 50%, transparent 50%);
     background-position:
       calc(100% - 18px) calc(50% + 1px),
       calc(100% - 13px) calc(50% + 1px);
@@ -366,7 +366,7 @@ const anliegen = [
   .fehler {
     margin-top: 0.35rem;
     font-size: 0.82rem;
-    color: var(--color-ziegel);
+    color: var(--color-terrakotta);
   }
 
   .datei {
@@ -374,20 +374,20 @@ const anliegen = [
     align-items: center;
     gap: 0.55rem;
     padding: 0.75rem 1.1rem;
-    border: 1px dashed var(--color-falz);
+    border: 1px dashed var(--color-kante);
     border-radius: var(--radius-bahn);
     cursor: pointer;
     font-size: 0.92rem;
     transition: border-color 0.18s ease, background-color 0.18s ease;
   }
   .datei:hover {
-    border-color: var(--color-patina);
-    background: var(--color-zink-hell);
+    border-color: var(--color-ziegel);
+    background: var(--color-blatt);
   }
   .datei :global(svg) {
     width: 1.1rem;
     height: 1.1rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
   .datei input {
     position: absolute;
@@ -396,7 +396,7 @@ const anliegen = [
     opacity: 0;
   }
   .datei:has(input:focus-visible) {
-    outline: 2px solid var(--color-patina);
+    outline: 2px solid var(--color-ziegel);
     outline-offset: 3px;
   }
   .datei__name:empty {
@@ -405,14 +405,14 @@ const anliegen = [
   .datei__name {
     margin-top: 0.5rem;
     font-size: 0.84rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
 
   .hilfe {
     margin-top: 0.55rem;
     font-size: 0.82rem;
     line-height: 1.55;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
   .hilfe--fuss {
     margin-top: 1rem;
@@ -435,7 +435,7 @@ const anliegen = [
     margin-top: 1.5rem;
     font-size: 0.88rem;
     line-height: 1.55;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     cursor: pointer;
     position: relative;
   }
@@ -449,15 +449,15 @@ const anliegen = [
     width: 1.15rem;
     height: 1.15rem;
     margin-top: 0.1rem;
-    border: 1px solid var(--color-falz);
+    border: 1px solid var(--color-kante);
     border-radius: 2px;
-    background: var(--color-bitumen);
+    background: var(--color-kalk);
     position: relative;
     flex-shrink: 0;
   }
   .zustimmung:has(input:checked) .zustimmung__kasten {
-    background: var(--color-patina);
-    border-color: var(--color-patina);
+    background: var(--color-ziegel);
+    border-color: var(--color-ziegel);
   }
   .zustimmung:has(input:checked) .zustimmung__kasten::after {
     content: '';
@@ -466,16 +466,16 @@ const anliegen = [
     top: 1px;
     width: 5px;
     height: 11px;
-    border: solid var(--color-bitumen);
+    border: solid var(--color-kalk);
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
   .zustimmung:has(input:focus-visible) .zustimmung__kasten {
-    outline: 2px solid var(--color-patina);
+    outline: 2px solid var(--color-ziegel);
     outline-offset: 3px;
   }
   .zustimmung a {
-    color: var(--color-patina);
+    color: var(--color-ziegel);
     text-decoration: underline;
     text-underline-offset: 3px;
   }

@@ -6,7 +6,7 @@ const text = `Guten Tag, ich habe eine Frage zu meinem Dach in `;
 ---
 
 <div class="leiste">
-  <a class="leiste__aktion leiste__aktion--patina" href={telLink}>
+  <a class="leiste__aktion leiste__aktion--marke" href={telLink}>
     <Icon name="ph:phone-fill" aria-hidden="true" />
     <span>Anrufen</span>
   </a>
@@ -42,8 +42,8 @@ const text = `Guten Tag, ich habe eine Frage zu meinem Dach in `;
     gap: 0.5rem;
     /* Mindestens 48 Pixel Tippflaeche. */
     min-height: 3.25rem;
-    background: var(--color-zink);
-    color: var(--color-zinkweiss);
+    background: var(--color-putz);
+    color: var(--color-russ);
     font-family: var(--font-display);
     font-weight: 650;
     font-stretch: 105%;
@@ -53,9 +53,9 @@ const text = `Guten Tag, ich habe eine Frage zu meinem Dach in `;
     width: 1.15rem;
     height: 1.15rem;
   }
-  .leiste__aktion--patina {
-    background: var(--color-patina);
-    color: var(--color-bitumen); /* 7,32:1 */
+  .leiste__aktion--marke {
+    background: var(--color-ziegel);
+    color: var(--color-kalk); /* 10,91:1 */
   }
   .leiste__aktion:active {
     filter: brightness(1.12);

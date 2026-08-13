@@ -37,7 +37,7 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
       was am Dach aus Blech ist.
     </p>
     <div class="hero__aktionen">
-      <a class="knopf knopf--patina" href="#kontakt">Anfrage stellen</a>
+      <a class="knopf knopf--marke" href="#kontakt">Anfrage stellen</a>
       <a class="knopf knopf--rand" href={telLink}>
         <Icon name="ph:phone-fill" aria-hidden="true" />
         Anrufen
@@ -56,13 +56,17 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
 </script>
 
 <style>
+  /* Der Hero ist die eine dunkle Flaeche am Seitenanfang. Auf ihm gelten
+     die Dunkelgrund-Tokens (Kalk als Schrift, Kreide als Sekundaertext),
+     nicht die hellen Grundwerte der uebrigen Seite. */
   .hero {
     position: relative;
     height: 100dvh;
     min-height: 32rem;
     overflow: hidden;
-    background: var(--color-bitumen);
+    background: var(--color-russ);
     isolation: isolate;
+    color: var(--color-kalk);
   }
 
   .hero__bild {
@@ -92,7 +96,7 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
     background: linear-gradient(
       115deg,
       transparent 42%,
-      color-mix(in srgb, var(--color-zinkweiss) 16%, transparent) 50%,
+      color-mix(in srgb, var(--color-blatt) 16%, transparent) 50%,
       transparent 58%
     );
     background-size: 260% 260%;
@@ -107,10 +111,10 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
     z-index: 1;
     background: linear-gradient(
       to top,
-      color-mix(in srgb, var(--color-bitumen) 92%, transparent) 0%,
-      color-mix(in srgb, var(--color-bitumen) 55%, transparent) 38%,
-      color-mix(in srgb, var(--color-bitumen) 12%, transparent) 68%,
-      color-mix(in srgb, var(--color-bitumen) 42%, transparent) 100%
+      color-mix(in srgb, var(--color-russ) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-russ) 55%, transparent) 38%,
+      color-mix(in srgb, var(--color-russ) 12%, transparent) 68%,
+      color-mix(in srgb, var(--color-russ) 42%, transparent) 100%
     );
     pointer-events: none;
   }
@@ -160,6 +164,16 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
     width: 1.05rem;
     height: 1.05rem;
   }
+  /* Der Rand-Knopf ist fuer hellen Grund gebaut. Auf dem dunklen Hero
+     bekommt er die Dunkelgrund-Werte, sonst verschwindet er im Foto. */
+  .hero__aktionen :global(.knopf--rand) {
+    border-color: color-mix(in srgb, var(--color-kalk) 45%, transparent);
+    color: var(--color-kalk);
+  }
+  .hero__aktionen :global(.knopf--rand:hover) {
+    border-color: var(--color-kalk);
+    background: color-mix(in srgb, var(--color-kalk) 12%, transparent);
+  }
 
   .hero__runter {
     position: absolute;
@@ -172,14 +186,14 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
     height: 2.5rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid color-mix(in srgb, var(--color-zinkweiss) 35%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-kalk) 45%, transparent);
     border-radius: 50%;
-    color: var(--color-zinkweiss);
+    color: var(--color-kalk);
     animation: heroRunter 2.2s ease-in-out infinite;
   }
   .hero__runter:hover {
-    border-color: var(--color-patina);
-    color: var(--color-patina);
+    border-color: var(--color-ziegel-hell);
+    color: var(--color-ziegel-hell);
   }
   .hero__runter :global(svg) {
     width: 1.05rem;

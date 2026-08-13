@@ -147,7 +147,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
           <p class="ablesung__vorbehalt">{VORBEHALT}</p>
 
           <div class="ablesung__aktionen">
-            <button type="button" class="knopf knopf--patina" data-rechner-uebernehmen>
+            <button type="button" class="knopf knopf--marke" data-rechner-uebernehmen>
               Ergebnis in die Anfrage übernehmen
             </button>
             <a
@@ -208,7 +208,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     margin-bottom: 1rem;
   }
   .rechner__kopf p {
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   .rechner__gitter {
@@ -237,7 +237,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     font-weight: 700;
     letter-spacing: 0;
     text-transform: none;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
   .block__skala {
     display: flex;
@@ -250,7 +250,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     margin-top: 0.7rem;
     font-size: 0.85rem;
     line-height: 1.5;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     max-width: 52ch;
   }
 
@@ -279,7 +279,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     flex-direction: column;
     gap: 0.2rem;
     padding: 0.85rem 0.9rem;
-    background: var(--color-zink);
+    background: var(--color-putz);
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     cursor: pointer;
@@ -295,11 +295,11 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     cursor: pointer;
   }
   .segment:has(input:checked) {
-    border-color: var(--color-patina);
-    background: var(--color-patina-tief);
+    border-color: var(--color-ziegel);
+    background: var(--color-lasur);
   }
   .segment:has(input:focus-visible) {
-    outline: 2px solid var(--color-patina);
+    outline: 2px solid var(--color-ziegel);
     outline-offset: 3px;
   }
   .segment[data-deaktiviert='ja'] {
@@ -319,7 +319,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
   .segment__zeile {
     font-size: 0.78rem;
     line-height: 1.4;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   /* Kontrollkaestchen */
@@ -339,7 +339,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     gap: 0.7rem;
     align-items: start;
     padding: 0.8rem 0.9rem;
-    background: var(--color-zink);
+    background: var(--color-putz);
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     cursor: pointer;
@@ -358,17 +358,17 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     width: 1.05rem;
     height: 1.05rem;
     margin-top: 0.15rem;
-    border: 1px solid var(--color-falz);
+    border: 1px solid var(--color-kante);
     border-radius: 2px;
-    background: var(--color-bitumen);
+    background: var(--color-kalk);
     position: relative;
   }
   .haken__eintrag:has(input:checked) {
-    border-color: var(--color-patina);
+    border-color: var(--color-ziegel);
   }
   .haken__eintrag:has(input:checked) .haken__kasten {
-    background: var(--color-patina);
-    border-color: var(--color-patina);
+    background: var(--color-ziegel);
+    border-color: var(--color-ziegel);
   }
   .haken__eintrag:has(input:checked) .haken__kasten::after {
     content: '';
@@ -377,12 +377,12 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     top: 1px;
     width: 5px;
     height: 10px;
-    border: solid var(--color-bitumen);
+    border: solid var(--color-kalk);
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
   }
   .haken__eintrag:has(input:focus-visible) {
-    outline: 2px solid var(--color-patina);
+    outline: 2px solid var(--color-ziegel);
     outline-offset: 3px;
   }
   .haken__eintrag[data-deaktiviert='ja'] {
@@ -400,12 +400,12 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     display: block;
     font-size: 0.78rem;
     line-height: 1.4;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   /* Ablesung: das Instrument. */
   .ablesung {
-    background: var(--color-zink);
+    background: var(--color-putz);
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     padding: clamp(1.25rem, 3vw, 1.9rem);
@@ -436,7 +436,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     font-size: 0.95rem;
     font-weight: 400;
     letter-spacing: 0;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   .ablesung__posten {
@@ -466,15 +466,15 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
   .ablesung :global(.posten__wert) {
     font-size: 0.88rem;
     white-space: nowrap;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
   }
 
   .ablesung__vorbehalt {
     font-size: 0.82rem;
     line-height: 1.55;
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     padding: 0.85rem 0.95rem;
-    background: var(--color-bitumen);
+    background: var(--color-kalk);
     border: 1px solid var(--color-linie);
     border-radius: 2px;
   }

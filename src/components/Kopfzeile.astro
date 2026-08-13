@@ -36,7 +36,7 @@ const navigation = [
         <Icon name="ph:phone-fill" aria-hidden="true" />
         <span>{betrieb.telefon.anzeige}</span>
       </a>
-      <a class="knopf knopf--patina kopf__cta" href="/#kontakt">Anfrage stellen</a>
+      <a class="knopf knopf--marke kopf__cta" href="/#kontakt">Anfrage stellen</a>
     </div>
   </div>
 </header>
@@ -47,7 +47,7 @@ const navigation = [
     inset: 0 0 auto 0;
     z-index: 40;
     /* Der Grund wird erst beim Scrollen dicht, damit der Hero oben offen wirkt. */
-    background: color-mix(in srgb, var(--color-bitumen) 82%, transparent);
+    background: color-mix(in srgb, var(--color-kalk) 82%, transparent);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid color-mix(in srgb, var(--color-linie) 70%, transparent);
   }
@@ -68,19 +68,13 @@ const navigation = [
     flex-shrink: 0;
   }
 
-  /* Das Logo hat einen weissen Grund und bleibt das auch, das ist die
-     Herstellervorgabe. Eine helle Karte mit weichem Schatten praesentiert
-     es bewusst als aufgesetztes Markenzeichen, statt es unpassend auf den
-     dunklen Grund zu zwingen. Radius folgt --radius-bahn wie der Rest der
-     Seite, nur der Schatten ist hier eigens: eine helle Karte auf dunklem
-     Grund braucht Tiefe, keine Kontur. */
+  /* Das Logo sitzt direkt auf dem Grund. Solange die Seite dunkel war,
+     brauchte es dafuer eine weisse Karte mit Schatten, weil ein Logo auf
+     weissem Grund sonst wie aufgeklebt wirkte. Mit dem hellen Cremeweiss
+     entfaellt dieser Notbehelf ersatzlos: kein Kasten, kein Schatten. */
   .kopf__logo {
     display: flex;
     align-items: center;
-    background: #fff;
-    border-radius: var(--radius-bahn);
-    padding: 0.3rem 0.55rem;
-    box-shadow: 0 2px 10px color-mix(in srgb, black 35%, transparent);
   }
   .kopf__logo :global(img) {
     display: block;
@@ -94,13 +88,13 @@ const navigation = [
     font-size: 0.92rem;
   }
   .kopf__nav a {
-    color: var(--color-kreide);
+    color: var(--color-graphit);
     transition: color 0.18s ease;
     position: relative;
     padding-block: 0.4rem;
   }
   .kopf__nav a:hover {
-    color: var(--color-zinkweiss);
+    color: var(--color-russ);
   }
   /* Unterstreichung als Falzlinie, nicht als Standard-Underline. */
   .kopf__nav a::after {
@@ -110,7 +104,7 @@ const navigation = [
     right: 100%;
     bottom: 0;
     height: 2px;
-    background: var(--color-patina);
+    background: var(--color-ziegel);
     transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .kopf__nav a:hover::after {
@@ -131,15 +125,15 @@ const navigation = [
     font-variant-numeric: tabular-nums;
     font-size: 0.92rem;
     font-weight: 600;
-    color: var(--color-zinkweiss);
+    color: var(--color-russ);
   }
   .kopf__tel:hover {
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
   .kopf__tel :global(svg) {
     width: 1rem;
     height: 1rem;
-    color: var(--color-patina);
+    color: var(--color-ziegel);
   }
 
   /* Auf dem Telefon uebernimmt die Sticky-Leiste unten die Aktionen. */
