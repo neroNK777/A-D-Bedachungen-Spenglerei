@@ -491,15 +491,6 @@
   font-size: 0.85rem;
   color: var(--color-schiefer);
 }
-.recht .recht__pruefen {
-  margin-bottom: 2rem;
-  padding: 1rem 1.15rem;
-  background: var(--color-ziegel-tief);
-  border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
-  border-radius: 2px;
-  color: var(--color-ziegel);
-  font-size: 0.9rem;
-}
 
 /* Platzhalterbild, solange echte Projektfotos fehlen. Bewusst als
    Baustellenmarkierung erkennbar, nicht als fertiges Bild getarnt. */

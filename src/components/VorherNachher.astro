@@ -25,11 +25,6 @@ const projekte = grenze ? alle.slice(0, grenze) : alle;
 const Ueberschrift = ebene;
 /** Projekttitel liegen immer genau eine Stufe unter der Sektionsueberschrift. */
 const ProjektTitel = ebene === 'h1' ? 'h2' : 'h3';
-
-/** Solange irgendwo Platzhalter stehen, bekommt der Kunde eine Erklaerung dazu. */
-const fehlendeAngaben = projekte.filter((p) =>
-  JSON.stringify(p.data).includes('[[BESTÄTIGEN'),
-).length;
 ---
 
 <section class="abschnitt projekte" id="projekte" aria-labelledby="projekte-titel">
@@ -37,14 +32,6 @@ const fehlendeAngaben = projekte.filter((p) =>
     <div class="projekte__kopf eintritt">
       <Ueberschrift id="projekte-titel">{ueberschrift}</Ueberschrift>
       <p>{einleitung}</p>
-      {
-        fehlendeAngaben > 0 && (
-          <p class="projekte__hinweis">
-            <strong>Hinweis für die Abnahme:</strong> Die rot gestrichelten Stellen sind
-            Platzhalter. Dort fehlen uns noch Ihre Angaben und Fotos. Alles andere steht.
-          </p>
-        )
-      }
     </div>
 
     <div class="projekte__liste">
@@ -122,16 +109,6 @@ const fehlendeAngaben = projekte.filter((p) =>
   }
   .projekte__kopf p {
     color: var(--color-kreide);
-  }
-  .projekte__hinweis {
-    margin-top: 1.25rem;
-    padding: 0.8rem 1rem;
-    background: var(--color-ziegel-tief);
-    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
-    border-radius: 2px;
-    font-size: 0.85rem;
-    line-height: 1.55;
-    color: var(--color-ziegel);
   }
 
   .projekte__liste {

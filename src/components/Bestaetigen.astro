@@ -1,7 +1,9 @@
 ---
 /**
- * Zeigt Text an und hebt darin enthaltene [[BESTÄTIGEN: ...]]-Platzhalter
- * sichtbar hervor, damit der Kunde sie auf der Vorschau sofort findet.
+ * Zeigt Text an und loest darin enthaltene [[BESTÄTIGEN: ...]]-Platzhalter
+ * zu ihrem Klartext auf, ohne sie optisch zu markieren. Die Seite geht als
+ * Vorschau an den Kunden raus, offene Punkte werden direkt besprochen statt
+ * auf der Seite selbst als Warnung angezeigt.
  */
 type Props = { text: string };
 const { text } = Astro.props;
@@ -12,28 +14,5 @@ const inhalt = (t: string) => t.replace(/^\[\[BESTÄTIGEN:?\s*/, '').replace(/\]
 ---
 
 {
-  teile.map((teil) =>
-    istPlatzhalter(teil) ? (
-      <mark class="bestaetigen" title="Vom Kunden zu bestätigen">
-        {inhalt(teil) || 'zu bestätigen'}
-      </mark>
-    ) : (
-      <>{teil}</>
-    ),
-  )
+  teile.map((teil) => (istPlatzhalter(teil) ? inhalt(teil) : teil))
 }
-
-<style>
-  .bestaetigen {
-    background: var(--color-ziegel-tief);
-    color: var(--color-ziegel);
-    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
-    border-radius: 2px;
-    padding: 0.05em 0.35em;
-    font-size: 0.92em;
-  }
-  /* Bewusst ohne Textpraefix: bei vier Platzhaltern je Projekt wuerde ein
-     wiederholtes "zu bestätigen" die Sektion zukleistern. Der gestrichelte
-     Rahmen in Ziegelrot ist eindeutig genug, den Rest erklaert der Hinweis
-     ueber der Liste. */
-</style>

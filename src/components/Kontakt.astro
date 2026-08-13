@@ -11,7 +11,6 @@ import { betrieb, mailLink, telLink, whatsappLink } from '../data/betrieb';
  */
 const formularId = import.meta.env.PUBLIC_FORMSPREE_ID || 'FORMULAR-ID';
 const ziel = `https://formspree.io/f/${formularId}`;
-const eingerichtet = formularId !== 'FORMULAR-ID';
 
 const anliegen = [
   { wert: 'steildach', titel: 'Steildach: neu decken oder sanieren' },
@@ -80,16 +79,6 @@ const anliegen = [
     </div>
 
     <div class="kontakt__formular eintritt">
-      {
-        !eingerichtet && (
-          <p class="einrichten">
-            <strong>Hinweis für die Einrichtung:</strong> Der Formularversand ist noch nicht
-            aktiv. In CLAUDE.md steht unter „Formspree einrichten“, welcher Schlüssel wo
-            einzutragen ist. Telefon und WhatsApp funktionieren bereits.
-          </p>
-        )
-      }
-
       <form action={ziel} method="POST" data-kontakt>
         <p
           class="status"
@@ -306,17 +295,6 @@ const anliegen = [
     border: 1px solid var(--color-linie);
     border-radius: var(--radius-bahn);
     padding: clamp(1.25rem, 3.5vw, 2.25rem);
-  }
-
-  .einrichten {
-    margin-bottom: 1.5rem;
-    padding: 0.85rem 1rem;
-    background: var(--color-ziegel-tief);
-    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
-    border-radius: 2px;
-    font-size: 0.85rem;
-    line-height: 1.55;
-    color: var(--color-ziegel);
   }
 
   .status {

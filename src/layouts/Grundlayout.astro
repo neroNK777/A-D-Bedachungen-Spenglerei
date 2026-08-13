@@ -9,13 +9,11 @@ import SeoSchema from '../components/SeoSchema.astro';
 type Props = {
   titel: string;
   beschreibung: string;
-  /** Poster des Hero vorladen, nur auf der Startseite sinnvoll. */
-  heroPoster?: boolean;
   /** Auf Rechtstexten bleibt die Sticky-Kontaktleiste weg. */
   ohneMobilLeiste?: boolean;
 };
 
-const { titel, beschreibung, heroPoster = false, ohneMobilLeiste = false } = Astro.props;
+const { titel, beschreibung, ohneMobilLeiste = false } = Astro.props;
 const kanonisch = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') || Astro.site!.href;
 const ogBild = new URL('/media/og-bild.jpg', Astro.site).href;
 ---
@@ -43,28 +41,6 @@ const ogBild = new URL('/media/og-bild.jpg', Astro.site).href;
     <meta name="theme-color" content="#14181A" />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="256x256" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-
-    {
-      heroPoster && (
-        <>
-          {/* LCP-Kandidat. Das Poster liegt unter dem Canvas und ist sofort da. */}
-          <link
-            rel="preload"
-            as="image"
-            href="/media/hero/poster-quer.webp"
-            media="(min-aspect-ratio: 95/100)"
-            fetchpriority="high"
-          />
-          <link
-            rel="preload"
-            as="image"
-            href="/media/hero/poster-hoch.webp"
-            media="(max-aspect-ratio: 95/100)"
-            fetchpriority="high"
-          />
-        </>
-      )
-    }
 
     <SeoSchema />
 

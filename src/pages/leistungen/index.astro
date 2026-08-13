@@ -45,14 +45,6 @@ const holen = (slugs: string[]) =>
 
                 <p class="karte__text">{l.text}</p>
 
-                {!l.bestaetigt && (
-                  <p class="pruefen">
-                    <strong>Zu bestätigen:</strong> Stand nicht auf der alten Website, ist
-                    ergänzt, weil ein Dachdecker- und Spenglereibetrieb das üblicherweise
-                    anbietet.
-                  </p>
-                )}
-
                 <ul class="karte__umfang">
                   {l.umfang.map((u) => (
                     <li>
@@ -157,17 +149,6 @@ const holen = (slugs: string[]) =>
   .karte__text {
     color: var(--color-kreide);
     max-width: 62ch;
-  }
-
-  .pruefen {
-    padding: 0.8rem 1rem;
-    background: var(--color-ziegel-tief);
-    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
-    border-radius: 2px;
-    font-size: 0.85rem;
-    line-height: 1.55;
-    color: var(--color-ziegel);
-    max-width: 60ch;
   }
 
   .karte__umfang {

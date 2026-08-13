@@ -1,86 +1,53 @@
 ---
+import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { telLink } from '../data/betrieb';
+import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
 
 /**
- * Scroll-gebundener Hero nach der Vorgabe aus der Tutorial-Datei.
- *
- * Kein <video>-Element: iOS Safari rundet currentTime auf den naechsten
- * Keyframe, rueckwaerts scrubben zwingt den Decoder zurueck, und iOS
- * entscheidet ueber Wiedergabe teils selbst. Stattdessen eine WebP-
- * Bildsequenz auf einem 2D-Canvas, siehe scripts/hero-frames.mjs.
- *
- * Ohne JavaScript und bei prefers-reduced-motion bleibt eine ganz normale
- * Hero-Sektion mit Standbild stehen. Der Inhalt ist in jedem Fall vollstaendig.
+ * Ruhiger, einmaliger Auftritt statt Scroll-Scrub: ein Foto, ein Einblenden
+ * beim Laden, ein leichter Glanzzug auf dem Blech, und auf Geraeten mit
+ * Maus eine kleine Parallaxe, die Foto und Text gegenlaeufig verschiebt.
+ * Kein <video>, keine Bildsequenz, kein an den Scroll gekoppelter Wert.
+ * Ohne JavaScript und bei prefers-reduced-motion steht ein normaler Hero
+ * mit Standbild da, der Inhalt ist in jedem Fall vollstaendig.
  */
-
-const phasen = [
-  'Der Dachstuhl steht offen. Ab hier zählt jede Reihe.',
-  'Lattung, Bahn, Deckung. Von der Traufe zum First.',
-  'Geschlossen. Vier Flächen, ein Grat, keine undichte Stelle.',
-];
 ---
 
-<section class="hero" data-hero data-hero-modus="statisch" aria-labelledby="hero-titel">
-  <div class="hero__buehne" data-hero-buehne>
-    <!-- Poster: liegt unter dem Canvas, ist sofort da und damit der
-         LCP-Kandidat. Im Kopf der Seite wird es vorgeladen. -->
-    <picture class="hero__poster">
-      <source srcset="/media/hero/poster-hoch.webp" media="(max-aspect-ratio: 95/100)" />
-      <img
-        src="/media/hero/poster-quer.webp"
-        alt="Ein offener Dachstuhl aus Holz, von oben gesehen, kurz vor dem Eindecken."
-        width="1100"
-        height="618"
-        fetchpriority="high"
-        decoding="sync"
-      />
-    </picture>
+<section class="hero" data-hero aria-labelledby="hero-titel">
+  <div class="hero__bild" data-hero-bild>
+    <Image
+      src={foto}
+      alt="Fertig gedecktes Walmdach im dunklen Doppelstehfalz, Abendlicht auf dem Blech."
+      widths={[640, 1100, 1600, 2200]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="hero__foto"
+    />
+    <div class="hero__glanz" aria-hidden="true"></div>
+  </div>
 
-    <!-- Datensparmodus und sehr alte Browser: vier Standbilder statt der
-         vollen Sequenz, weiterhin an den Scroll gekoppelt. -->
-    <div class="hero__standbilder" aria-hidden="true">
-      {
-        [1, 2, 3, 4].map((n) => (
-          <picture class="hero__standbild" data-hero-standbild data-aktiv={n === 1 ? 'ja' : 'nein'}>
-            <source srcset={`/media/hero/standbild-hoch-${n}.webp`} media="(max-aspect-ratio: 95/100)" />
-            <img src={`/media/hero/standbild-quer-${n}.webp`} alt="" loading="lazy" decoding="async" />
-          </picture>
-        ))
-      }
-    </div>
+  <div class="hero__schleier" aria-hidden="true"></div>
 
-    <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
-
-    <div class="hero__schleier" aria-hidden="true"></div>
-
-    <div class="bahn hero__inhalt">
-      <h1 id="hero-titel" class="hero__titel">Dicht ist keine Meinung.</h1>
-      <p class="hero__unter">
-        Dachdeckerei und Spenglerei in Augsburg. Steildach, Flachdach, Metallfalz und alles,
-        was am Dach aus Blech ist.
-      </p>
-      <div class="hero__aktionen">
-        <a class="knopf knopf--patina" href="#kontakt">Anfrage stellen</a>
-        <a class="knopf knopf--rand" href={telLink}>
-          <Icon name="ph:phone-fill" aria-hidden="true" />
-          Anrufen
-        </a>
-      </div>
-    </div>
-
-    <!-- Bauabschnitte: wechseln dreimal ueber die Scrollstrecke, nicht pro
-         Frame. Sie erklaeren, was im Zeitraffer gerade passiert. -->
-    <div class="bahn hero__phasen" aria-hidden="true">
-      {
-        phasen.map((text, i) => (
-          <p class="hero__phase" data-hero-phase data-aktiv="nein" data-index={i}>
-            {text}
-          </p>
-        ))
-      }
+  <div class="bahn hero__inhalt" data-hero-inhalt>
+    <h1 id="hero-titel" class="hero__titel">Dicht ist keine Meinung.</h1>
+    <p class="hero__unter">
+      Dachdeckerei und Spenglerei in Augsburg. Steildach, Flachdach, Metallfalz und alles,
+      was am Dach aus Blech ist.
+    </p>
+    <div class="hero__aktionen">
+      <a class="knopf knopf--patina" href="#kontakt">Anfrage stellen</a>
+      <a class="knopf knopf--rand" href={telLink}>
+        <Icon name="ph:phone-fill" aria-hidden="true" />
+        Anrufen
+      </a>
     </div>
   </div>
+
+  <a class="hero__runter" href="#leistungen" aria-label="Zum Inhalt runterscrollen">
+    <Icon name="ph:arrow-down" aria-hidden="true" />
+  </a>
 </section>
 
 <script>
@@ -91,114 +58,84 @@ const phasen = [
 <style>
   .hero {
     position: relative;
-    /* Grundzustand ohne JavaScript: eine gewoehnliche Hero-Sektion. */
-    min-height: 100dvh;
-    background: var(--color-bitumen);
-  }
-
-  /* Der Scrollweg, der in Fortschritt 0 bis 1 uebersetzt wird. 400vh minus
-     ein Viewport ergibt 300vh Weg. Bei 900 Pixel Fensterhoehe sind das rund
-     11 Scrollpixel je Frame: fein genug fuer durchgehende Bewegung, ohne
-     dass der Nutzer durch Luft scrollt. */
-  .hero[data-hero-modus='scrub'] {
-    height: 400vh;
-  }
-  .hero[data-hero-modus='standbilder'] {
-    height: 250vh;
-  }
-
-  .hero__buehne {
-    --p: 0;
-    position: sticky;
-    top: 0;
     height: 100dvh;
+    min-height: 32rem;
     overflow: hidden;
-    display: grid;
-    grid-template-areas: 'stapel';
-    /* Feste Zeilenhoehe, damit height:100% der Kinder nicht zirkulaer wird
-       und Poster wie Canvas wirklich die Buehne fuellen. */
-    grid-template-rows: 100%;
+    background: var(--color-bitumen);
     isolation: isolate;
   }
-  .hero__buehne > * {
-    grid-area: stapel;
-  }
 
-  .hero__poster,
-  .hero__standbild {
-    display: block;
-    width: 100%;
-    height: 100%;
+  .hero__bild {
+    position: absolute;
+    inset: 0;
+    /* Traegt die Parallaxe. Getrennt vom Zoom auf dem Foto selbst, sonst
+       kaempfen zwei Animationen um dieselbe transform-Eigenschaft. */
+    transform: translate(calc(var(--zeiger-x, 0) * -16px), calc(var(--zeiger-y, 0) * -16px));
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .hero__poster img,
-  .hero__standbild img {
+  .hero__foto {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 60%;
+    /* Ueberskaliert, damit die Parallaxe des Elternelements nie den Rand
+       zeigt. Dazu ein einmaliges, ruhiges Heranzoomen beim ersten Laden. */
+    transform: scale(1.06);
+    animation: heroZoom 16s ease-out both;
   }
 
-  .hero__standbilder {
-    display: none;
-    position: relative;
-  }
-  .hero[data-hero-modus='standbilder'] .hero__standbilder {
-    display: grid;
-    grid-template-areas: 'stapel';
-    grid-template-rows: 100%;
-  }
-  .hero__standbilder .hero__standbild {
-    grid-area: stapel;
-    opacity: 0;
-    transition: opacity 0.45s ease;
-  }
-  .hero__standbild[data-aktiv='ja'] {
-    opacity: 1;
-  }
-
-  .hero__canvas {
-    width: 100%;
-    height: 100%;
-    /* Erst einblenden, wenn der erste Frame dekodiert ist. Sonst blitzt
-       eine leere Flaeche ueber dem Poster auf. */
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-  .hero__canvas[data-bereit='ja'] {
-    opacity: 1;
-  }
-  .hero:not([data-hero-modus='scrub']) .hero__canvas {
-    display: none;
+  /* Ein wandernder Lichtstreifen, wie er auf frisch gefalztem Blech
+     entlanglaeuft. Rein dekorativ, per Blend-Mode statt eigener Ebene. */
+  .hero__glanz {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 42%,
+      color-mix(in srgb, var(--color-zinkweiss) 16%, transparent) 50%,
+      transparent 58%
+    );
+    background-size: 260% 260%;
+    mix-blend-mode: overlay;
+    animation: heroGlanz 11s ease-in-out infinite;
+    pointer-events: none;
   }
 
-  /* Schleier, damit die Schrift auf jedem Frame liest. Der Zeitraffer geht
-     vom hellen Himmel ins dunkle Dach, deshalb unten kraeftiger. */
   .hero__schleier {
-    background:
-      linear-gradient(
-        to top,
-        color-mix(in srgb, var(--color-bitumen) 94%, transparent) 0%,
-        color-mix(in srgb, var(--color-bitumen) 70%, transparent) 30%,
-        color-mix(in srgb, var(--color-bitumen) 18%, transparent) 62%,
-        color-mix(in srgb, var(--color-bitumen) 48%, transparent) 100%
-      );
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-bitumen) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-bitumen) 55%, transparent) 38%,
+      color-mix(in srgb, var(--color-bitumen) 12%, transparent) 68%,
+      color-mix(in srgb, var(--color-bitumen) 42%, transparent) 100%
+    );
+    pointer-events: none;
   }
 
   .hero__inhalt {
     position: relative;
     z-index: 2;
-    align-self: end;
-    /* Auf dem Telefon liegt unten die Sticky-Kontaktleiste. Die
-       Schaltflaechen duerfen ihr nicht ins Gehege kommen. */
-    padding-bottom: clamp(5.5rem, 8vh, 6rem);
-    max-width: 90rem;
-  }
-  @media (min-width: 62rem) {
-    .hero__inhalt {
-      padding-bottom: clamp(3rem, 8vh, 6rem);
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    padding-bottom: clamp(5.5rem, 10vh, 7rem);
+    transform: translate(calc(var(--zeiger-x, 0) * 6px), calc(var(--zeiger-y, 0) * 6px));
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .hero__titel,
+  .hero__unter,
+  .hero__aktionen {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroEintritt 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
   .hero__titel {
+    animation-delay: 0.1s;
     font-size: var(--text-display);
     line-height: var(--text-display--line-height);
     letter-spacing: var(--text-display--letter-spacing);
@@ -206,15 +143,15 @@ const phasen = [
     max-width: 16ch;
     margin-bottom: 1.1rem;
   }
-
   .hero__unter {
+    animation-delay: 0.25s;
     max-width: 46ch;
     color: var(--color-kreide);
     font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem);
     margin-bottom: 1.9rem;
   }
-
   .hero__aktionen {
+    animation-delay: 0.4s;
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -224,63 +161,85 @@ const phasen = [
     height: 1.05rem;
   }
 
-  .hero__phasen {
-    position: relative;
-    z-index: 2;
-    align-self: end;
-    padding-bottom: clamp(3rem, 8vh, 6rem);
-    pointer-events: none;
-  }
-
-  .hero__phase {
+  .hero__runter {
     position: absolute;
-    left: 1.25rem;
-    right: 1.25rem;
-    bottom: clamp(3rem, 8vh, 6rem);
-    max-width: 30ch;
-    font-family: var(--font-display);
-    font-size: clamp(1.3rem, 1rem + 1.4vw, 2.1rem);
-    font-weight: 700;
-    font-stretch: 112%;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-      opacity 0.5s ease,
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translateX(-50%);
+    display: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--color-zinkweiss) 35%, transparent);
+    border-radius: 50%;
+    color: var(--color-zinkweiss);
+    animation: heroRunter 2.2s ease-in-out infinite;
   }
-  .hero__phase[data-aktiv='ja'] {
-    opacity: 1;
-    transform: none;
+  .hero__runter:hover {
+    border-color: var(--color-patina);
+    color: var(--color-patina);
+  }
+  .hero__runter :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
   }
 
-  @media (min-width: 48rem) {
-    .hero__phase {
-      left: 2.5rem;
-      right: 2.5rem;
-    }
-  }
-  @media (min-width: 80rem) {
-    .hero__phase {
-      left: 4rem;
-      right: 4rem;
+  @media (min-width: 40rem) {
+    .hero__runter {
+      display: flex;
     }
   }
 
-  /* Beim Scrub weicht der Kopftext, sobald die Animation uebernimmt.
-     Getrieben von genau einem Wert, den JavaScript pro Frame setzt. */
-  .hero[data-hero-modus='scrub'] .hero__inhalt,
-  .hero[data-hero-modus='standbilder'] .hero__inhalt {
-    opacity: clamp(0, calc((0.14 - var(--p)) * 8), 1);
-    transform: translateY(calc(var(--p) * -70px));
+  @keyframes heroZoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.06);
+    }
+  }
+  @keyframes heroGlanz {
+    0%,
+    100% {
+      background-position: 120% 0%;
+    }
+    50% {
+      background-position: -20% 100%;
+    }
+  }
+  @keyframes heroEintritt {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes heroRunter {
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      transform: translateX(-50%) translateY(6px);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero__canvas,
-    .hero__standbild,
-    .hero__phase {
+    .hero__bild,
+    .hero__inhalt {
       transition: none;
+    }
+    .hero__bild,
+    .hero__foto,
+    .hero__glanz,
+    .hero__titel,
+    .hero__unter,
+    .hero__aktionen,
+    .hero__runter {
+      animation: none;
+      opacity: 1;
+      transform: none;
     }
   }
 </style>
