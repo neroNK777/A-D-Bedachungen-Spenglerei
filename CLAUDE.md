@@ -312,20 +312,20 @@ src/pages/                   Routen
 
 ### 7.1 Fotos
 
-Fünf Projekte stehen mit echten Vorher-Nachher-Fotos: Walmdach im Doppelstehfalz,
-Flachdachabdichtung, Gaubenverkleidung und Dachrinne, Fassadenverkleidung der
-Gaubenwange, dazu die Startaufnahme. Offen ist nur noch ein **sechstes** Projekt
-(aktuell Platzhalter „Steildach-Sanierung“ in `src/content/projekte/`), dafür
-Vorher und Nachher von derselben Stelle, bei ähnlichem Licht. Ein siebtes braucht
-danach nur eine weitere Markdown-Datei und zwei Bilder, am Layoutcode ändert sich
-nichts.
+Alle fünf ursprünglich angelegten Projekte stehen mit echten Vorher-Nachher-Fotos,
+dazu ein sechstes: Walmdach im Doppelstehfalz, Flachdachabdichtung,
+Gaubenverkleidung und Dachrinne, Steildach-Eindeckung, Fassadenverkleidung der
+Gaubenwange. Kein Platzhalter mehr offen. Ein siebtes Projekt braucht nur eine
+weitere Markdown-Datei in `src/content/projekte/` und zwei Bilder, am Layoutcode
+ändert sich nichts.
 
 ### 7.2 Angaben zu den Projekten
 
-Bei allen fünf befüllten Projekten fehlt noch mindestens eines von Ort, Bauzeit
-oder genauem Material (Titanzink, Aluminium oder Stahl). Steht jeweils als
-`[[BESTÄTIGEN: …]]` im Frontmatter der Markdown-Datei, sieht man auf der Seite
-selbst aber nicht mehr an, siehe Abschnitt 7.5.
+Bei allen sechs Projekten fehlt noch mindestens eines von Ort, Bauzeit oder
+genauem Material (Titanzink, Aluminium oder Stahl, oder bei der Steildach-
+Eindeckung die genaue Ziegelart). Steht jeweils als `[[BESTÄTIGEN: …]]` im
+Frontmatter der Markdown-Datei, sieht man auf der Seite selbst aber nicht mehr
+an, siehe Abschnitt 7.5.
 
 ### 7.3 Leistungen, die noch zu bestätigen sind
 
@@ -443,7 +443,8 @@ in `vercel.json` als `permanent` (301), zusammen mit `/datenschultz.html`.
 - Alle neun Sektionen der Startseite, inhaltlich befüllt.
 - Hero als ruhiges Foto mit Parallaxe, Glanzzug und Eintritt, siehe Abschnitt 5.
   Kein Video, kein Scroll-Scrub mehr.
-- Vorher-Nachher-Schieber: Maus, Finger, Tastatur, `role="slider"`, fünf Projekte.
+- Vorher-Nachher-Schieber: Maus, Finger, Tastatur, `role="slider"`, sechs Projekte,
+  kein Platzhalter mehr offen.
 - Kostenrechner mit Aufschlüsselung, Übernahme in Formular und WhatsApp, jetzt
   auf eigener Seite `/kostenrechner`. Startseite zeigt nur noch eine leichte,
   nicht-interaktive Vorschau mit echt berechnetem Beispielwert.
