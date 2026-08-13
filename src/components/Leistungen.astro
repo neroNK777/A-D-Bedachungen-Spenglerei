@@ -1,36 +1,8 @@
 ---
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
-import { leistungen } from '../data/leistungen';
+import { leistungen, leistungGruppen } from '../data/leistungen';
 import nachher from '../assets/projekte/walmdach-falz-nachher.jpeg';
-
-/**
- * Neun Leistungen in zwei fachlichen Gruppen statt einer langen Liste.
- * Sturmschaden fehlt hier bewusst: der bekommt eine eigene Sektion.
- */
-const gruppen = [
-  {
-    titel: 'Dachdeckerei',
-    zeile: 'Die Fläche selbst: decken, abdichten, dämmen, in Ordnung halten.',
-    slugs: [
-      'steildach-eindeckung',
-      'flachdachabdichtung',
-      'dachsanierung',
-      'dachfenster',
-      'dachwartung',
-    ],
-  },
-  {
-    titel: 'Spenglerei',
-    zeile: 'Alles aus Blech: Falzdeckung, Rinnen, Anschlüsse, Verwahrungen.',
-    slugs: [
-      'blechdach-und-falzarbeiten',
-      'dachrinnen-und-entwaesserung',
-      'spenglerarbeiten',
-      'fassadenverkleidung',
-    ],
-  },
-];
 
 const holen = (slugs: string[]) =>
   slugs.map((s) => leistungen.find((l) => l.slug === s)!).filter(Boolean);
@@ -49,7 +21,7 @@ const holen = (slugs: string[]) =>
 
     <div class="leistungen__raster">
       {
-        gruppen.map((gruppe) => (
+        leistungGruppen.map((gruppe) => (
           <div class="gruppe eintritt">
             <div class="gruppe__kopf">
               <h3>{gruppe.titel}</h3>

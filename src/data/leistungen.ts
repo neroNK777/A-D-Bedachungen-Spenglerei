@@ -197,3 +197,34 @@ export const leistungen: Leistung[] = [
 ];
 
 export const leistungNachSlug = (slug: string) => leistungen.find((l) => l.slug === slug);
+
+/**
+ * Die neun Leistungen in zwei fachlichen Gruppen statt einer langen Liste.
+ * Sturmschaden fehlt hier bewusst: der bekommt eine eigene Sektion.
+ * Genutzt von der Leistungen-Sektion auf der Startseite und von der
+ * ausgebauten Uebersicht unter /leistungen, damit die Gruppierung nur an
+ * einer Stelle gepflegt wird.
+ */
+export const leistungGruppen = [
+  {
+    titel: 'Dachdeckerei',
+    zeile: 'Die Fläche selbst: decken, abdichten, dämmen, in Ordnung halten.',
+    slugs: [
+      'steildach-eindeckung',
+      'flachdachabdichtung',
+      'dachsanierung',
+      'dachfenster',
+      'dachwartung',
+    ],
+  },
+  {
+    titel: 'Spenglerei',
+    zeile: 'Alles aus Blech: Falzdeckung, Rinnen, Anschlüsse, Verwahrungen.',
+    slugs: [
+      'blechdach-und-falzarbeiten',
+      'dachrinnen-und-entwaesserung',
+      'spenglerarbeiten',
+      'fassadenverkleidung',
+    ],
+  },
+] satisfies { titel: string; zeile: string; slugs: string[] }[];

@@ -145,6 +145,8 @@ const navigation = [
   /* Auf dem Telefon uebernimmt die Sticky-Leiste unten die Aktionen. */
   .kopf__cta {
     display: none;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.88rem;
   }
 
   @media (min-width: 30rem) {
@@ -155,15 +157,9 @@ const navigation = [
 
   @media (min-width: 62rem) {
     .kopf__nav,
-    .kopf__tel {
-      display: flex;
-    }
-  }
-  @media (min-width: 78rem) {
+    .kopf__tel,
     .kopf__cta {
-      display: inline-flex;
-      padding: 0.6rem 1.1rem;
-      font-size: 0.88rem;
+      display: flex;
     }
   }
 

@@ -2,7 +2,10 @@
 import { Icon } from 'astro-icon/components';
 import Grundlayout from '../../layouts/Grundlayout.astro';
 import Kontakt from '../../components/Kontakt.astro';
-import { leistungen } from '../../data/leistungen';
+import { leistungen, leistungGruppen } from '../../data/leistungen';
+
+const holen = (slugs: string[]) =>
+  slugs.map((s) => leistungen.find((l) => l.slug === s)!).filter(Boolean);
 ---
 
 <Grundlayout
@@ -13,32 +16,63 @@ import { leistungen } from '../../data/leistungen';
     <div class="bahn">
       <h1>Was wir am Dach machen.</h1>
       <p class="kopfblock__zeile">
-        Neun Leistungen, alle aus einer Hand. Zu jeder steht auf ihrer Seite, was dazugehört
-        und worauf es dabei ankommt.
+        Dachdeckerei und Spenglerei liegen bei uns in einer Hand. Neun Leistungen, alle aus
+        einer Hand: hier steht zu jeder, was dazugehört und worauf es dabei ankommt. Auf der
+        jeweiligen Detailseite steht das noch einmal ausführlicher.
       </p>
     </div>
   </section>
 
-  <section class="abschnitt liste-abschnitt">
-    <div class="bahn">
-      <ul class="liste">
-        {
-          leistungen.map((l) => (
-            <li class="eintritt">
-              <a href={`/leistungen/${l.slug}`}>
-                <Icon name={l.icon} class="liste__icon" aria-hidden="true" />
-                <span class="liste__text">
-                  <span class="liste__titel">{l.titel}</span>
-                  <span class="liste__zeile">{l.zeile}</span>
-                </span>
-                <Icon name="ph:arrow-right" class="liste__pfeil" aria-hidden="true" />
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  {
+    leistungGruppen.map((gruppe, i) => (
+      <section
+        class="abschnitt gruppen-abschnitt"
+        aria-labelledby={`gruppe-${i}-titel`}
+      >
+        <div class="bahn">
+          <div class="gruppen-kopf eintritt">
+            <h2 id={`gruppe-${i}-titel`}>{gruppe.titel}</h2>
+            <p>{gruppe.zeile}</p>
+          </div>
+
+          <div class="karten">
+            {holen(gruppe.slugs).map((l) => (
+              <article class="karte eintritt" id={l.slug}>
+                <div class="karte__kopf">
+                  <Icon name={l.icon} class="karte__icon" aria-hidden="true" />
+                  <h3>{l.titel}</h3>
+                </div>
+
+                <p class="karte__text">{l.text}</p>
+
+                {!l.bestaetigt && (
+                  <p class="pruefen">
+                    <strong>Zu bestätigen:</strong> Stand nicht auf der alten Website, ist
+                    ergänzt, weil ein Dachdecker- und Spenglereibetrieb das üblicherweise
+                    anbietet.
+                  </p>
+                )}
+
+                <ul class="karte__umfang">
+                  {l.umfang.map((u) => (
+                    <li>
+                      <Icon name="ph:check" aria-hidden="true" />
+                      <span>{u}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a class="knopf knopf--rand karte__link" href={`/leistungen/${l.slug}`}>
+                  <span>Mehr zu {l.titel}</span>
+                  <Icon name="ph:arrow-right" aria-hidden="true" />
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
 
   <Kontakt />
 </Grundlayout>
@@ -57,64 +91,115 @@ import { leistungen } from '../../data/leistungen';
     margin-bottom: 1.1rem;
   }
   .kopfblock__zeile {
-    max-width: 52ch;
+    max-width: 56ch;
     color: var(--color-kreide);
   }
 
-  .liste-abschnitt {
-    padding-top: clamp(3rem, 6vw, 4.5rem);
+  .gruppen-abschnitt {
+    padding-block: clamp(3rem, 6vw, 4.5rem);
   }
-
-  .liste li + li {
+  .gruppen-abschnitt + .gruppen-abschnitt {
     border-top: 1px solid var(--color-linie);
   }
-  .liste a {
+
+  .gruppen-kopf {
+    max-width: 54ch;
+    padding-bottom: 1.25rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    border-bottom: 2px solid var(--color-patina);
+  }
+  .gruppen-kopf h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 0.5rem;
+  }
+  .gruppen-kopf p {
+    color: var(--color-kreide);
+  }
+
+  .karten {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    gap: 1.75rem;
+  }
+
+  .karte {
+    display: grid;
     gap: 1rem;
-    align-items: center;
-    padding: 1.5rem 0.6rem 1.5rem 0;
-    transition: background-color 0.18s ease, padding-left 0.18s ease;
-  }
-  .liste a:hover {
     background: var(--color-zink);
-    padding-left: 0.6rem;
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    padding: clamp(1.5rem, 3vw, 2.1rem);
+    /* Scrollziel von aussen (z. B. "Mehr erfahren" auf der Startseite):
+       nicht unter der fixen Kopfzeile verschwinden. */
+    scroll-margin-top: 6rem;
   }
-  .liste__icon {
+
+  .karte__kopf {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .karte__icon {
     width: 1.5rem;
     height: 1.5rem;
     color: var(--color-patina);
+    flex-shrink: 0;
   }
-  .liste__titel {
-    display: block;
+  .karte__kopf h3 {
     font-family: var(--font-display);
-    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+    font-size: 1.25rem;
     font-weight: 700;
     font-stretch: 112%;
-    letter-spacing: -0.015em;
-  }
-  .liste__zeile {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.95rem;
-    color: var(--color-kreide);
-    max-width: 60ch;
-  }
-  .liste__pfeil {
-    width: 1.2rem;
-    height: 1.2rem;
-    color: var(--color-schiefer);
-    transition: color 0.18s ease, transform 0.18s ease;
-  }
-  .liste a:hover .liste__pfeil {
-    color: var(--color-patina);
-    transform: translateX(4px);
+    letter-spacing: -0.01em;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .liste a,
-    .liste__pfeil {
-      transition: none;
+  .karte__text {
+    color: var(--color-kreide);
+    max-width: 62ch;
+  }
+
+  .pruefen {
+    padding: 0.8rem 1rem;
+    background: var(--color-ziegel-tief);
+    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-ziegel);
+    max-width: 60ch;
+  }
+
+  .karte__umfang {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-linie);
+  }
+  .karte__umfang li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    align-items: start;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  .karte__umfang :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.2rem;
+    color: var(--color-patina);
+  }
+
+  .karte__link {
+    justify-self: start;
+    margin-top: 0.25rem;
+  }
+
+  @media (min-width: 55rem) {
+    .karten {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
     }
   }
 </style>
