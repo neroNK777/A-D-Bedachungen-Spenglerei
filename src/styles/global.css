@@ -110,7 +110,25 @@
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Fallback fuer Safari < 16, siehe @supports gleich darunter. */
     overflow-x: hidden;
+  }
+
+  /* overflow-x: hidden auf body ist ein bekannter WebKit-Bug: Safari (auch
+     iOS) bricht dadurch position: sticky auf allen Nachfahren, weil es den
+     Body-Overflow als eigene Scrollbox behandelt statt als Ausschnitt des
+     Viewports. Betroffen war hier der Dachaufbau-Explorer, die einzige
+     sticky-Flaeche, die auch auf schmalen Bildschirmen aktiv ist (die
+     anderen zwei sitzen hinter einer min-width-Grenze): die gepinnte Buehne
+     rastete nicht ein, der Schnitt scrollte in einem Frame durch, danach
+     blieb nur noch das Antippen der Schichten uebrig.
+     overflow-x: clip clippt genauso, oeffnet aber keine eigene Scrollbox,
+     sticky bleibt intakt. Unterstuetzt seit Safari 16 (2022); aeltere
+     Versionen fallen auf das hidden oben zurueck. */
+  @supports (overflow-x: clip) {
+    body {
+      overflow-x: clip;
+    }
   }
 
   ::selection {

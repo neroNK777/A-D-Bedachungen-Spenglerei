@@ -484,6 +484,27 @@ in `vercel.json` als `permanent` (301), zusammen mit `/datenschultz.html`.
 - Lighthouse auf der Vercel-Preview messen. Lokal geprüft sind Aufbau, Bildformate,
   Schriftauslieferung und JavaScript-Menge.
 
+**Gefixt: Pinning im Dachaufbau-Explorer auf dem Handy**
+
+`body { overflow-x: hidden; }` bricht in Safari (auch iOS) `position: sticky`
+auf allen Nachfahren — ein bekannter WebKit-Bug, siehe Kommentar in
+`global.css` bei der Regel. Betroffen war ausschliesslich die Buehne des
+Dachaufbau-Explorers: die einzige `position: sticky`-Flaeche, die auch unter
+62rem Breite aktiv ist (die beiden anderen, in `Leistungen.astro` und
+`Kostenrechner.astro`, sitzen hinter einer `min-width: 62rem`-Grenze und
+waren nie betroffen). Ohne Pinning scrollte die Buehne in einem Frame durch,
+danach blieb nur eine leere Restlaenge des 320vh-Scrollwegs übrig — auf dem
+Scroll passierte sichtbar nichts mehr, und nur das Antippen einer Schicht
+funktionierte noch.
+
+Fix: `overflow-x: clip` statt `hidden`, per `@supports` progressiv
+verbessert (Safari ab Version 16, 2022). Clip schneidet genauso ab, öffnet
+aber keine eigene Scrollbox, `position: sticky` bleibt intakt. Auf sehr
+altem Safari (< 16) bleibt der Bug bestehen, das ist der Kompromiss.
+In Chromium mobil durchgemessen (Buehne bleibt bei `top: 0`, `--spread`
+läuft 4 → 16, aktive Schicht wandert bis zur letzten durch); Chromium hatte
+den Bug nie, ein echter iOS-Test bleibt offen (siehe Punkt oben).
+
 ---
 
 ## 11. Regeln für spätere Änderungen
