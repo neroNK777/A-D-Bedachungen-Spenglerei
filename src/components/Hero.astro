@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { telLink } from '../data/betrieb';
-import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
+import foto from '../assets/projekte/steildach-eindeckung-vorher.jpeg';
 
 /**
  * Ruhiger, einmaliger Auftritt statt Scroll-Scrub: ein Foto, ein Einblenden
@@ -18,7 +18,7 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
   <div class="hero__bild" data-hero-bild>
     <Image
       src={foto}
-      alt="Fertig gedecktes Walmdach im dunklen Doppelstehfalz, Abendlicht auf dem Blech."
+      alt="Giebel im Rohbau, die Lattung liegt noch offen bis zum First, Gerüst und Ziegel warten auf die Eindeckung."
       widths={[640, 1100, 1600, 2200]}
       sizes="100vw"
       loading="eager"
@@ -81,7 +81,10 @@ import foto from '../assets/projekte/walmdach-falz-nachher.jpeg';
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 60%;
+    /* Der Dachstuhl und die offene Lattung liegen im oberen Bilddrittel,
+       darunter folgt nur noch Gerüst und Werkzeug am Boden. Der Ausschnitt
+       zieht deshalb nach oben, statt wie sonst nach unten aufs Dach. */
+    object-position: center 30%;
     /* Ueberskaliert, damit die Parallaxe des Elternelements nie den Rand
        zeigt. Dazu ein einmaliges, ruhiges Heranzoomen beim ersten Laden. */
     transform: scale(1.06);

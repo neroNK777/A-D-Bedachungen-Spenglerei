@@ -2,7 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import { leistungen, leistungGruppen } from '../data/leistungen';
-import nachher from '../assets/projekte/walmdach-falz-nachher.jpeg';
+import foto from '../assets/projekte/gaube-kupferverkleidung.jpeg';
 
 const holen = (slugs: string[]) =>
   slugs.map((s) => leistungen.find((l) => l.slug === s)!).filter(Boolean);
@@ -47,16 +47,16 @@ const holen = (slugs: string[]) =>
 
       <figure class="leistungen__bild eintritt">
         <Image
-          src={nachher}
-          alt="Fertig gedecktes Walmdach im dunklen Doppelstehfalz, aufgenommen vom Gerüst aus."
+          src={foto}
+          alt="Frisch verkleidete Gaube in Kupfer, Ortgang und Wange glänzen noch neu neben der Ziegeldeckung."
           widths={[480, 760, 1100]}
           sizes="(min-width: 62rem) 33vw, 100vw"
           loading="lazy"
           class="leistungen__foto"
         />
         <figcaption>
-          Doppelstehfalz auf einem Walmdach. Die Scharen werden in Dasing vorgekantet und
-          auf dem Dach geschlossen.
+          Gaubenverkleidung in Kupfer. Zuschnitt und Kantung kommen aus der eigenen
+          Werkstatt in Dasing, verwahrt wird auf dem Dach.
         </figcaption>
       </figure>
     </div>
@@ -167,9 +167,10 @@ const holen = (slugs: string[]) =>
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    /* Die Quelle ist nahezu quadratisch mit viel Himmel oben. Der
-       Ausschnitt wird deshalb nach unten auf das Dach gezogen. */
-    object-position: center 68%;
+    /* Die Quelle ist hochformatig und schon eng auf die Gaube geschnitten.
+       Ein knapper Zug nach oben laesst mehr vom Kupfer stehen und
+       schneidet mehr vom Werkzeug im Vordergrund weg. */
+    object-position: center 40%;
     border-radius: var(--radius-bahn);
   }
   .leistungen__bild figcaption {

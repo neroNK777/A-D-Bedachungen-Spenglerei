@@ -254,9 +254,9 @@ Quellvideo, ein `ffmpeg-static`-Build-Schritt.
 **Auf Wunsch des Kunden entfernt.** Kein Video, kein Scroll-Scrub, kein Canvas
 mehr. Stattdessen ein ruhiger, einmaliger Auftritt:
 
-- Ein einzelnes Foto (`walmdach-falz-nachher.jpeg`, dasselbe Bild wie in der
-  Leistungen-Sektion), volle Breite, ein Viewport hoch, via `astro:assets`
-  `<Image>` mit `fetchpriority="high"` als LCP-Kandidat.
+- Ein einzelnes Foto (`steildach-eindeckung-vorher.jpeg`, dasselbe Vorher-Bild
+  wie im Projekt „Steildach-Eindeckung"), volle Breite, ein Viewport hoch, via
+  `astro:assets` `<Image>` mit `fetchpriority="high"` als LCP-Kandidat.
 - Ein sehr langsames Heranzoomen des Fotos beim Laden (`@keyframes heroZoom`,
   16 s, läuft einmal).
 - Ein wandernder Lichtstreifen über dem Foto (`@keyframes heroGlanz`), per
