@@ -1,0 +1,193 @@
+---
+import { getCollection } from 'astro:content';
+import VergleichSchieber from './VergleichSchieber.astro';
+import Bestaetigen from './Bestaetigen.astro';
+
+type Props = {
+  /** Auf der Startseite die ersten vier, auf /projekte alle. */
+  grenze?: number;
+  ueberschrift?: string;
+  einleitung?: string;
+  ebene?: 'h2' | 'h1';
+};
+
+const {
+  grenze,
+  ueberschrift = 'Vier Dächer, vorher und nachher.',
+  einleitung = 'Ziehen Sie die Kante quer über das Bild. Darunter steht, was das Problem war und womit es gelöst wurde.',
+  ebene = 'h2',
+} = Astro.props;
+
+const alle = (await getCollection('projekte')).sort(
+  (a, b) => a.data.reihenfolge - b.data.reihenfolge,
+);
+const projekte = grenze ? alle.slice(0, grenze) : alle;
+const Ueberschrift = ebene;
+/** Projekttitel liegen immer genau eine Stufe unter der Sektionsueberschrift. */
+const ProjektTitel = ebene === 'h1' ? 'h2' : 'h3';
+
+/** Solange irgendwo Platzhalter stehen, bekommt der Kunde eine Erklaerung dazu. */
+const fehlendeAngaben = projekte.filter((p) =>
+  JSON.stringify(p.data).includes('[[BESTÄTIGEN'),
+).length;
+---
+
+<section class="abschnitt projekte" id="projekte" aria-labelledby="projekte-titel">
+  <div class="bahn">
+    <div class="projekte__kopf eintritt">
+      <Ueberschrift id="projekte-titel">{ueberschrift}</Ueberschrift>
+      <p>{einleitung}</p>
+      {
+        fehlendeAngaben > 0 && (
+          <p class="projekte__hinweis">
+            <strong>Hinweis für die Abnahme:</strong> Die rot gestrichelten Stellen sind
+            Platzhalter. Dort fehlen uns noch Ihre Angaben und Fotos. Alles andere steht.
+          </p>
+        )
+      }
+    </div>
+
+    <div class="projekte__liste">
+      {
+        projekte.map((p, i) => (
+          <article class="projekt eintritt">
+            <VergleichSchieber
+              vorher={p.data.vorher}
+              nachher={p.data.nachher}
+              vorherAlt={p.data.vorherAlt}
+              nachherAlt={p.data.nachherAlt}
+              eifrig={i === 0}
+            />
+
+            <div class="projekt__unten">
+              <div class="projekt__text">
+                <ProjektTitel class="projekt__titel">
+                  <Bestaetigen text={p.data.titel} />
+                </ProjektTitel>
+                <p class="projekt__problem">
+                  <Bestaetigen text={p.data.problem} />
+                </p>
+              </div>
+
+              <dl class="projekt__daten">
+                <div>
+                  <dt>Ort</dt>
+                  <dd>
+                    <Bestaetigen text={p.data.ort} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>Arbeit</dt>
+                  <dd>
+                    <Bestaetigen text={p.data.art} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>Material</dt>
+                  <dd>
+                    <Bestaetigen text={p.data.material} />
+                  </dd>
+                </div>
+                <div>
+                  <dt>Dauer</dt>
+                  <dd>
+                    <Bestaetigen text={p.data.dauer} />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import { starteVergleiche } from '../scripts/vergleich';
+  starteVergleiche();
+</script>
+
+<style>
+  .projekte__kopf {
+    max-width: 52ch;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .projekte__kopf :global(h1),
+  .projekte__kopf :global(h2) {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 1rem;
+  }
+  .projekte__kopf p {
+    color: var(--color-kreide);
+  }
+  .projekte__hinweis {
+    margin-top: 1.25rem;
+    padding: 0.8rem 1rem;
+    background: var(--color-ziegel-tief);
+    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-ziegel);
+  }
+
+  .projekte__liste {
+    display: grid;
+    gap: clamp(4rem, 9vw, 7rem);
+  }
+
+  .projekt__unten {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .projekt__titel {
+    font-size: 1.35rem;
+    font-stretch: 115%;
+    margin-bottom: 0.6rem;
+  }
+  .projekt__problem {
+    max-width: 60ch;
+    color: var(--color-kreide);
+  }
+
+  .projekt__daten {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+  }
+  .projekt__daten dt {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 0.3rem;
+  }
+  .projekt__daten dd {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  @media (min-width: 62rem) {
+    .projekt__unten {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .projekt__daten {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: none;
+      padding-top: 0;
+      gap: 1.25rem 1rem;
+    }
+  }
+</style>

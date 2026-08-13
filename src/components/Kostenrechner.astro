@@ -1,0 +1,516 @@
+---
+import { Icon } from 'astro-icon/components';
+import {
+  DACHFORM,
+  FLAECHE,
+  MATERIAL,
+  UMFANG,
+  VORBEHALT,
+  ZUSATZ,
+  type DachformId,
+  type MaterialId,
+  type UmfangId,
+  type ZusatzId,
+} from '../data/kalkulation';
+import { whatsappLink } from '../data/betrieb';
+
+const dachformen = Object.entries(DACHFORM) as [DachformId, (typeof DACHFORM)[DachformId]][];
+const materialien = Object.entries(MATERIAL) as [MaterialId, (typeof MATERIAL)[MaterialId]][];
+const umfaenge = Object.entries(UMFANG) as [UmfangId, (typeof UMFANG)[UmfangId]][];
+const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][];
+---
+
+<section class="abschnitt rechner" id="kostenrechner" aria-labelledby="rechner-titel">
+  <div class="bahn">
+    <div class="rechner__kopf eintritt">
+      <h2 id="rechner-titel">Was kostet das ungefähr?</h2>
+      <p>
+        Vier Angaben genügen für eine Größenordnung. Der Rechner läuft in Ihrem Browser,
+        es wird nichts übertragen, solange Sie nicht selbst eine Anfrage abschicken.
+      </p>
+    </div>
+
+    <div class="rechner__gitter eintritt" data-rechner>
+      <!-- Steuerung ------------------------------------------------------ -->
+      <div class="rechner__steuerung">
+        <fieldset class="block">
+          <legend class="etikett">Dachform</legend>
+          <div class="segmente segmente--drei">
+            {
+              dachformen.map(([id, d], i) => (
+                <label class="segment">
+                  <input type="radio" name="dachform" value={id} checked={i === 0} />
+                  <span class="segment__titel">{d.titel}</span>
+                  <span class="segment__zeile">{d.hinweis}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend class="etikett">
+            Ungefähre Dachfläche
+            <output class="block__wert zahlen" data-anzeige="flaeche">{FLAECHE.start} m²</output>
+          </legend>
+          <input
+            class="regler"
+            type="range"
+            name="flaeche"
+            data-feld="flaeche"
+            min={FLAECHE.min}
+            max={FLAECHE.max}
+            step={FLAECHE.schritt}
+            value={FLAECHE.start}
+            aria-label="Ungefähre Dachfläche in Quadratmetern"
+          />
+          <div class="block__skala zahlen" aria-hidden="true">
+            <span>{FLAECHE.min} m²</span>
+            <span>{FLAECHE.max} m²</span>
+          </div>
+          <p class="block__hilfe">
+            Die Dachfläche ist grösser als die Grundfläche des Hauses. Bei einem normalen
+            Satteldach etwa ein Drittel mehr.
+          </p>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend class="etikett">Material</legend>
+          <div class="segmente segmente--vier">
+            {
+              materialien.map(([id, m], i) => (
+                <label class="segment" data-deaktiviert="nein">
+                  <input type="radio" name="material" value={id} checked={i === 0} />
+                  <span class="segment__titel">{m.titel}</span>
+                  <span class="segment__zeile zahlen">hält {m.lebensdauer}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="block__hilfe" data-hinweis="material">{materialien[0]![1].hinweis}</p>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend class="etikett">Umfang</legend>
+          <div class="segmente segmente--drei">
+            {
+              umfaenge.map(([id, u], i) => (
+                <label class="segment">
+                  <input type="radio" name="umfang" value={id} checked={i === 0} />
+                  <span class="segment__titel">{u.titel}</span>
+                  <span class="segment__zeile">{u.hinweis}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="block">
+          <legend class="etikett">Kommt noch dazu</legend>
+          <div class="haken">
+            {
+              zusatz.map(([id, z]) => (
+                <label class="haken__eintrag" data-deaktiviert="nein">
+                  <input type="checkbox" name="zusatz" value={id} />
+                  <span class="haken__kasten" aria-hidden="true" />
+                  <span>
+                    <span class="haken__titel">{z.titel}</span>
+                    <span class="haken__zeile">{z.hinweis}</span>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Ablesung ------------------------------------------------------- -->
+      <div class="rechner__ablesung">
+        <div class="ablesung">
+          <p class="ablesung__etikett">Unverbindliche Spanne</p>
+          <p class="ablesung__summe">
+            <span class="zahlen" data-anzeige="von">0 €</span>
+            <span class="ablesung__bis">bis</span>
+            <span class="zahlen" data-anzeige="bis">0 €</span>
+          </p>
+
+          <div class="ablesung__posten" data-posten></div>
+
+          <p class="ablesung__vorbehalt">{VORBEHALT}</p>
+
+          <div class="ablesung__aktionen">
+            <button type="button" class="knopf knopf--patina" data-rechner-uebernehmen>
+              Ergebnis in die Anfrage übernehmen
+            </button>
+            <a
+              class="knopf knopf--rand"
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-rechner-whatsapp
+            >
+              <Icon name="ph:whatsapp-logo-fill" aria-hidden="true" />
+              Per WhatsApp schicken
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <noscript>
+        <div class="ablesung ablesung--ohne-js">
+          <p class="ablesung__etikett">Ohne JavaScript</p>
+          <p class="ablesung__vorbehalt">
+            Der Rechner braucht JavaScript. Als Anhaltspunkt die Spannen je Quadratmeter,
+            inklusive Material und Lohn:
+          </p>
+          <ul class="ohne-js__liste zahlen">
+            {
+              materialien.map(([, m]) => (
+                <li>
+                  <span>{m.titel}</span>
+                  <span>
+                    {m.proQm.von} bis {m.proQm.bis} € je m²
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="ablesung__vorbehalt">{VORBEHALT}</p>
+        </div>
+      </noscript>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { starteKostenrechner } from '../scripts/kostenrechner';
+  starteKostenrechner();
+</script>
+
+<style>
+  .rechner__kopf {
+    max-width: 52ch;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .rechner__kopf h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 1rem;
+  }
+  .rechner__kopf p {
+    color: var(--color-kreide);
+  }
+
+  .rechner__gitter {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .block {
+    border: none;
+    padding: 0;
+    margin: 0 0 2.25rem;
+  }
+  .block:last-child {
+    margin-bottom: 0;
+  }
+  .block legend {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 0.7rem;
+  }
+  .block__wert {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--color-patina);
+  }
+  .block__skala {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--color-schiefer);
+    margin-top: -0.4rem;
+  }
+  .block__hilfe {
+    margin-top: 0.7rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-kreide);
+    max-width: 52ch;
+  }
+
+  /* Segmentwahl: gekantete Bleche nebeneinander, kein Pillen-Design. */
+  .segmente {
+    display: grid;
+    gap: 0.5rem;
+  }
+  @media (min-width: 30rem) {
+    .segmente--drei {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .segmente--vier {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 75rem) {
+    .segmente--vier {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .segment {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.85rem 0.9rem;
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .segment:hover {
+    border-color: var(--color-schiefer);
+  }
+  .segment input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .segment:has(input:checked) {
+    border-color: var(--color-patina);
+    background: var(--color-patina-tief);
+  }
+  .segment:has(input:focus-visible) {
+    outline: 2px solid var(--color-patina);
+    outline-offset: 3px;
+  }
+  .segment[data-deaktiviert='ja'] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .segment[data-deaktiviert='ja'] input {
+    cursor: not-allowed;
+  }
+  .segment__titel {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+  .segment__zeile {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-kreide);
+  }
+
+  /* Kontrollkaestchen */
+  .haken {
+    display: grid;
+    gap: 0.5rem;
+  }
+  @media (min-width: 40rem) {
+    .haken {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .haken__eintrag {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.8rem 0.9rem;
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    cursor: pointer;
+    transition: border-color 0.18s ease;
+  }
+  .haken__eintrag:hover {
+    border-color: var(--color-schiefer);
+  }
+  .haken__eintrag input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .haken__kasten {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.15rem;
+    border: 1px solid var(--color-falz);
+    border-radius: 2px;
+    background: var(--color-bitumen);
+    position: relative;
+  }
+  .haken__eintrag:has(input:checked) {
+    border-color: var(--color-patina);
+  }
+  .haken__eintrag:has(input:checked) .haken__kasten {
+    background: var(--color-patina);
+    border-color: var(--color-patina);
+  }
+  .haken__eintrag:has(input:checked) .haken__kasten::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid var(--color-bitumen);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .haken__eintrag:has(input:focus-visible) {
+    outline: 2px solid var(--color-patina);
+    outline-offset: 3px;
+  }
+  .haken__eintrag[data-deaktiviert='ja'] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .haken__titel {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 0.92rem;
+  }
+  .haken__zeile {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--color-kreide);
+  }
+
+  /* Ablesung: das Instrument. */
+  .ablesung {
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    padding: clamp(1.25rem, 3vw, 1.9rem);
+  }
+  .ablesung__etikett {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 0.8rem;
+  }
+  .ablesung__summe {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: clamp(1.75rem, 1.1rem + 2.4vw, 2.7rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-stretch: 108%;
+  }
+  .ablesung__bis {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-kreide);
+  }
+
+  .ablesung__posten {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-linie);
+  }
+  .ablesung :global(.posten) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .ablesung :global(.posten__kopf) {
+    display: flex;
+    flex-direction: column;
+  }
+  .ablesung :global(.posten__titel) {
+    font-size: 0.92rem;
+  }
+  .ablesung :global(.posten__menge) {
+    font-size: 0.76rem;
+    color: var(--color-schiefer);
+  }
+  .ablesung :global(.posten__wert) {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    color: var(--color-kreide);
+  }
+
+  .ablesung__vorbehalt {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--color-kreide);
+    padding: 0.85rem 0.95rem;
+    background: var(--color-bitumen);
+    border: 1px solid var(--color-linie);
+    border-radius: 2px;
+  }
+
+  .ablesung__aktionen {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+  .ablesung__aktionen :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .ablesung--ohne-js {
+    margin-top: 1.5rem;
+  }
+  .ohne-js__liste {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+  .ohne-js__liste li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  @media (min-width: 62rem) {
+    .rechner__gitter {
+      grid-template-columns: 1.35fr 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    .rechner__ablesung {
+      position: sticky;
+      top: 6.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .segment,
+    .haken__eintrag {
+      transition: none;
+    }
+  }
+</style>

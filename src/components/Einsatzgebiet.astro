@@ -1,0 +1,299 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb } from '../data/betrieb';
+import { einsatzradius, orte, ringe } from '../data/einsatzgebiet';
+
+/**
+ * Einsatzgebiet als Radiusdarstellung.
+ *
+ * Bewusst keine eingebettete Karte. Google Maps uebertraegt beim Laden Daten
+ * des Besuchers, dafuer braeuchte es eine Einwilligung. Die Frage lautet
+ * ohnehin nicht "wo genau liegt Augsburg", sondern "kommen die zu mir".
+ *
+ * Das SVG ist Geometrie, keine gezeichnete Illustration: Kreise und Punkte
+ * aus echten Entfernungen und Himmelsrichtungen.
+ */
+const GROESSE = 420;
+const MITTE = GROESSE / 2;
+const RAND = 186;
+const proKm = RAND / einsatzradius;
+
+const punkte = orte.map((o) => {
+  const bogen = (o.winkel * Math.PI) / 180;
+  const r = o.km * proKm;
+  const x = MITTE + Math.sin(bogen) * r;
+  const y = MITTE - Math.cos(bogen) * r;
+  return {
+    ...o,
+    x,
+    y,
+    // Ohne eigenen Versatz sitzt der Name mittig ueber dem Punkt.
+    textX: x + (o.versatz?.x ?? 0),
+    textY: y + (o.versatz?.y ?? -10),
+    ausrichtung:
+      o.anker ?? (x > MITTE + 60 ? 'end' : x < MITTE - 60 ? 'start' : 'middle'),
+  };
+});
+
+const spalten = 3;
+const sortiert = [...orte].sort((a, b) => a.km - b.km);
+---
+
+<section class="abschnitt gebiet" id="einsatzgebiet" aria-labelledby="gebiet-titel">
+  <div class="bahn gebiet__innen">
+    <div class="gebiet__text eintritt">
+      <h2 id="gebiet-titel">Augsburg und dreissig Kilometer drumherum.</h2>
+      <p class="gebiet__zeile">
+        Büro in Augsburg, Werkstatt in Dasing. Alles dazwischen und im Umkreis fahren wir
+        an. Ob Ihr Ort dabei ist, klärt ein Anruf schneller als jede Karte.
+      </p>
+
+      <ul class="gebiet__liste">
+        {
+          sortiert.map((o) => (
+            <li data-standort={o.standort ?? 'nein'}>
+              <span>{o.name}</span>
+              {o.standort && (
+                <span class="gebiet__rolle">{o.standort === 'buero' ? 'Büro' : 'Werkstatt'}</span>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="gebiet__adressen">
+        {
+          betrieb.standorte.map((s) => (
+            <div class="adresse">
+              <p class="adresse__rolle">{s.rolle}</p>
+              <p>
+                {s.strasse}
+                <br />
+                {s.plz} {s.ort}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="gebiet__bild eintritt">
+      <svg
+        viewBox={`0 0 ${GROESSE} ${GROESSE}`}
+        class="radius"
+        role="img"
+        aria-labelledby="radius-titel radius-text"
+      >
+        <title id="radius-titel">Einsatzgebiet als Radiusdarstellung</title>
+        <desc id="radius-text">
+          Konzentrische Ringe um Augsburg mit einem Radius von 10, 20 und 30 Kilometern. Die
+          angefahrenen Orte sind mit ihrer Luftlinienentfernung eingetragen. Dieselben Orte
+          stehen daneben als Liste.
+        </desc>
+
+        {/* Ringe */}
+        {
+          ringe.map((km) => (
+            <>
+              <circle
+                cx={MITTE}
+                cy={MITTE}
+                r={km * proKm}
+                fill="none"
+                stroke="var(--color-linie)"
+                stroke-width="1"
+                stroke-dasharray={km === einsatzradius ? '0' : '3 5'}
+              />
+              {/* Beschriftung auf der Senkrechten nach unten: dort liegt
+                  kein Ort, im Norden waeren Gersthofen und Gablingen im Weg. */}
+              <text
+                x={MITTE + 6}
+                y={MITTE + km * proKm - 5}
+                text-anchor="start"
+                class="radius__ring"
+              >
+                {km} km
+              </text>
+            </>
+          ))
+        }
+
+        {/* Fadenkreuz, an den Himmelsrichtungen ausgerichtet */}
+        <line
+          x1={MITTE - RAND}
+          y1={MITTE}
+          x2={MITTE + RAND}
+          y2={MITTE}
+          stroke="var(--color-linie)"
+          stroke-width="1"
+        />
+        <line
+          x1={MITTE}
+          y1={MITTE - RAND}
+          x2={MITTE}
+          y2={MITTE + RAND}
+          stroke="var(--color-linie)"
+          stroke-width="1"
+        />
+
+        {/* Orte */}
+        {
+          punkte.map((p) => (
+            <g class="radius__ort" data-standort={p.standort ?? 'nein'}>
+              {p.standort ? (
+                <rect x={p.x - 4.5} y={p.y - 4.5} width="9" height="9" class="radius__marke" />
+              ) : (
+                <circle cx={p.x} cy={p.y} r="3" class="radius__marke" />
+              )}
+              <text x={p.textX} y={p.textY} text-anchor={p.ausrichtung} class="radius__name">
+                {p.name}
+              </text>
+            </g>
+          ))
+        }
+      </svg>
+
+      <p class="gebiet__hinweis">
+        <Icon name="ph:info" aria-hidden="true" />
+        Keine eingebettete Karte: die würde beim Laden Ihre Daten an einen Kartenanbieter
+        übertragen, und das ohne Ihre Zustimmung.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .gebiet__innen {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+    align-items: center;
+  }
+
+  .gebiet__text h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    max-width: 16ch;
+    margin-bottom: 1rem;
+  }
+  .gebiet__zeile {
+    color: var(--color-kreide);
+    max-width: 52ch;
+  }
+
+  .gebiet__liste {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem 1.5rem;
+    margin: 2rem 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+    font-size: 0.95rem;
+  }
+  .gebiet__liste li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .gebiet__liste li[data-standort='buero'] span:first-child,
+  .gebiet__liste li[data-standort='werkstatt'] span:first-child {
+    font-weight: 600;
+    color: var(--color-patina);
+  }
+  .gebiet__rolle {
+    font-family: var(--font-display);
+    font-size: 0.62rem;
+    font-weight: 650;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+  }
+
+  .gebiet__adressen {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+  }
+  .adresse__rolle {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 0.3rem;
+  }
+  .adresse p:last-child {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .radius {
+    width: 100%;
+    height: auto;
+    max-width: 30rem;
+    margin-inline: auto;
+    display: block;
+    overflow: visible;
+  }
+  .radius__ring {
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+    fill: var(--color-schiefer);
+  }
+  .radius__marke {
+    fill: var(--color-kreide);
+  }
+  .radius__ort[data-standort='buero'] .radius__marke,
+  .radius__ort[data-standort='werkstatt'] .radius__marke {
+    fill: var(--color-patina);
+  }
+  .radius__name {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--color-kreide);
+  }
+  .radius__ort[data-standort='buero'] .radius__name,
+  .radius__ort[data-standort='werkstatt'] .radius__name {
+    fill: var(--color-patina);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+
+  .gebiet__hinweis {
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--color-schiefer);
+    max-width: 46ch;
+    margin-inline: auto;
+  }
+  .gebiet__hinweis :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  @media (min-width: 30rem) {
+    .gebiet__liste {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .gebiet__adressen {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .gebiet__innen {
+      grid-template-columns: 1fr 0.95fr;
+    }
+  }
+</style>

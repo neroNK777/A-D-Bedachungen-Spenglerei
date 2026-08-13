@@ -1,0 +1,78 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb, telLink, whatsappLink } from '../data/betrieb';
+
+const text = `Guten Tag, ich habe eine Frage zu meinem Dach in `;
+---
+
+<div class="leiste">
+  <a class="leiste__aktion leiste__aktion--patina" href={telLink}>
+    <Icon name="ph:phone-fill" aria-hidden="true" />
+    <span>Anrufen</span>
+  </a>
+  <a
+    class="leiste__aktion"
+    href={whatsappLink(text)}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <Icon name="ph:whatsapp-logo-fill" aria-hidden="true" />
+    <span>WhatsApp</span>
+  </a>
+  <span class="nur-sr">Telefon und WhatsApp: {betrieb.telefon.anzeige}</span>
+</div>
+
+<style>
+  .leiste {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--color-linie);
+    border-top: 1px solid var(--color-linie);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .leiste__aktion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    /* Mindestens 48 Pixel Tippflaeche. */
+    min-height: 3.25rem;
+    background: var(--color-zink);
+    color: var(--color-zinkweiss);
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 0.95rem;
+  }
+  .leiste__aktion :global(svg) {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+  .leiste__aktion--patina {
+    background: var(--color-patina);
+    color: var(--color-bitumen); /* 7,32:1 */
+  }
+  .leiste__aktion:active {
+    filter: brightness(1.12);
+  }
+
+  @media (min-width: 62rem) {
+    .leiste {
+      display: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Platz fuer die Leiste, damit sie nichts verdeckt. */
+  @media (max-width: 61.99rem) {
+    body:has(.leiste) {
+      padding-bottom: calc(3.25rem + env(safe-area-inset-bottom));
+    }
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+import Grundlayout from '../layouts/Grundlayout.astro';
+import Bestaetigen from '../components/Bestaetigen.astro';
+import { betrieb } from '../data/betrieb';
+
+const [buero, werkstatt] = betrieb.standorte;
+---
+
+<Grundlayout
+  titel="Impressum | A&D Bedachungen und Spenglerei"
+  beschreibung="Impressum nach § 5 DDG von A&D Bedachungen und Spenglerei: Anschrift, Kontakt, Handwerkskammer und Angaben zur Berufsbezeichnung."
+  ohneMobilLeiste
+>
+  <article class="abschnitt recht">
+    <div class="bahn recht__innen">
+      <h1>Impressum</h1>
+
+      <p class="recht__pruefen">
+        <strong>Vor der Veröffentlichung prüfen:</strong> Die rot markierten Angaben sind
+        pflichtig und liegen uns nicht vor. Ein unvollständiges Impressum ist abmahnfähig.
+        Bitte alle Markierungen ersetzen und den Text von einer Rechtsberatung freigeben lassen.
+      </p>
+
+      <h2>Angaben gemäss § 5 DDG</h2>
+      <p>
+        {betrieb.name}<br />
+        <Bestaetigen text="[[BESTÄTIGEN: Rechtsform, zum Beispiel Einzelunternehmen oder GmbH]]" /><br />
+        {buero!.strasse}<br />
+        {buero!.plz} {buero!.ort}
+      </p>
+
+      <h2>Vertreten durch</h2>
+      <p>
+        <Bestaetigen
+          text="[[BESTÄTIGEN: Vor- und Nachname der vertretungsberechtigten Person, bei einer GmbH die Geschäftsführung]]"
+        />
+      </p>
+
+      <h2>Kontakt</h2>
+      <p>
+        Telefon: <a href={`tel:${betrieb.telefon.waehlbar}`}>{betrieb.telefon.anzeige}</a><br />
+        E-Mail: <a href={`mailto:${betrieb.email}`}>{betrieb.email}</a>
+      </p>
+
+      <h2>Weitere Betriebsstätte</h2>
+      <p>
+        Werkstatt<br />
+        {werkstatt!.strasse}<br />
+        {werkstatt!.plz} {werkstatt!.ort}
+      </p>
+
+      <h2>Registereintrag</h2>
+      <p>
+        <Bestaetigen
+          text="[[BESTÄTIGEN: Registergericht und Handelsregisternummer, falls eingetragen. Bei einem Einzelunternehmen ohne Eintragung entfällt dieser Abschnitt ersatzlos.]]"
+        />
+      </p>
+
+      <h2>Umsatzsteuer-Identifikationsnummer</h2>
+      <p>
+        Umsatzsteuer-Identifikationsnummer gemäss § 27a Umsatzsteuergesetz:<br />
+        <Bestaetigen
+          text="[[BESTÄTIGEN: USt-IdNr., beginnt mit DE. Falls keine vorhanden, stattdessen die Steuernummer oder der Hinweis auf die Kleinunternehmerregelung nach § 19 UStG.]]"
+        />
+      </p>
+
+      <h2>Berufsrechtliche Angaben</h2>
+      <p>
+        Gesetzliche Berufsbezeichnung: Dachdecker und Klempner, Anlage A der Handwerksordnung.
+        Verliehen in der Bundesrepublik Deutschland.
+      </p>
+      <p>
+        Zuständige Handwerkskammer:<br />
+        <Bestaetigen
+          text="[[BESTÄTIGEN: zuständige Handwerkskammer mit Anschrift, in der Regel Handwerkskammer für Schwaben, Siebentischstraße 52-58, 86161 Augsburg]]"
+        /><br />
+        Eintragung in die Handwerksrolle:
+        <Bestaetigen text="[[BESTÄTIGEN: Betriebsnummer der Handwerksrolle]]" />
+      </p>
+      <p>
+        Es gelten die Handwerksordnung (HwO) und die Berufsordnung der zuständigen
+        Handwerkskammer. Beide sind auf den Seiten der Kammer und unter
+        <a href="https://www.gesetze-im-internet.de/hwo/" rel="noopener noreferrer" target="_blank"
+          >gesetze-im-internet.de</a
+        > einsehbar.
+      </p>
+
+      <h2>Berufshaftpflichtversicherung</h2>
+      <p>
+        <Bestaetigen
+          text="[[BESTÄTIGEN: Name und Anschrift des Versicherers sowie räumlicher Geltungsbereich. Für Handwerksbetriebe nicht zwingend, aber üblich und vertrauensbildend.]]"
+        />
+      </p>
+
+      <h2>Verantwortlich für den Inhalt</h2>
+      <p>
+        <Bestaetigen text="[[BESTÄTIGEN: Name und Anschrift der verantwortlichen Person]]" />
+      </p>
+
+      <h2>Verbraucherstreitbeilegung</h2>
+      <p>
+        Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer
+        Verbraucherschlichtungsstelle teilzunehmen.
+      </p>
+      <p class="recht__klein">
+        Hinweis: Die Online-Streitbeilegungsplattform der Europäischen Kommission wurde zum
+        20. Juli 2025 eingestellt. Ein Link darauf gehört seitdem nicht mehr ins Impressum.
+      </p>
+
+      <h2>Haftung für Inhalte</h2>
+      <p>
+        Als Diensteanbieter sind wir für eigene Inhalte auf diesen Seiten nach den allgemeinen
+        Gesetzen verantwortlich. Wir sind jedoch nicht verpflichtet, übermittelte oder
+        gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf
+        eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der
+        Nutzung von Informationen nach den allgemeinen Gesetzen bleiben davon unberührt. Eine
+        diesbezügliche Haftung ist erst ab dem Zeitpunkt der Kenntnis einer konkreten
+        Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen entfernen
+        wir diese Inhalte umgehend.
+      </p>
+
+      <h2>Haftung für Links</h2>
+      <p>
+        Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen
+        Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr
+        übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder
+        Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf
+        mögliche Rechtsverstösse überprüft, rechtswidrige Inhalte waren nicht erkennbar. Bei
+        Bekanntwerden von Rechtsverletzungen entfernen wir derartige Links umgehend.
+      </p>
+
+      <h2>Urheberrecht</h2>
+      <p>
+        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen
+        dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art
+        der Verwertung ausserhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen
+        Zustimmung des jeweiligen Autors beziehungsweise Erstellers. Downloads und Kopien dieser
+        Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+      </p>
+    </div>
+  </article>
+</Grundlayout>
+

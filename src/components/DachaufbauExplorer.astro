@@ -1,0 +1,466 @@
+---
+import { schichten } from '../data/dachaufbau';
+
+/**
+ * Schnitt durch ein gedaemmtes Steildach.
+ *
+ * Beim Scrollen faehrt der Schichtaufbau auseinander, danach wandert die
+ * Erklaerung Schicht fuer Schicht durch. Ein Klick oder Tipp auf eine
+ * Schicht uebernimmt die Steuerung. Das ist die Sektion, die Fachwissen
+ * zeigt statt es zu behaupten.
+ */
+const mitte = (schichten.length - 1) / 2;
+---
+
+{/* Bewusst ohne .abschnitt: dessen Aussenabstand wuerde die Sticky-Buehne
+    um bis zu 144 Pixel nach unten schieben, sodass sie erst spaet am
+    Fensterrand einrastet. Den Abstand traegt hier die Buehne selbst. */}
+<section class="aufbau" id="dachaufbau" aria-labelledby="aufbau-titel">
+  <div class="aufbau__strecke" data-aufbau>
+    <div class="aufbau__buehne" data-aufbau-buehne>
+      <div class="bahn aufbau__innen">
+        <div class="aufbau__text">
+          <h2 id="aufbau-titel">Ein Dach besteht aus acht Schichten. Sieben sieht niemand.</h2>
+          <p class="aufbau__intro">
+            Was von der Strasse aus zu sehen ist, hält den Regen nur ab. Dicht bleibt das
+            Dach durch das, was darunter liegt. Tippen Sie eine Schicht an.
+          </p>
+
+          {/* Kein aria-live: der Scroll wechselt die Schicht bis zu achtmal
+              und wuerde eine Vorlesehilfe zutexten. Screenreader bekommen
+              den vollstaendigen Text stattdessen an der jeweiligen
+              Schaltflaeche selbst, siehe unten. */}
+          <div class="aufbau__tafel" data-aufbau-tafel aria-hidden="true">
+            {
+              schichten.map((s, i) => (
+                <article class="tafel" data-tafel={s.id} data-aktiv={i === 0 ? 'ja' : 'nein'}>
+                  <p class="tafel__mass">{s.mass}</p>
+                  <h3 class="tafel__titel">{s.titel}</h3>
+                  <p class="tafel__text">{s.text}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="aufbau__schnitt">
+          <ol class="stapel" data-aufbau-stapel>
+            {
+              schichten.map((s, i) => (
+                <li
+                  class="schicht"
+                  style={`--i:${i - mitte}; --h:${s.hoehe}px; --farbe:${s.farbe};`}
+                  data-muster={s.muster}
+                >
+                  <button type="button" data-schicht={s.id} data-aktiv={i === 0 ? 'ja' : 'nein'}>
+                    <span class="schicht__flaeche" aria-hidden="true" />
+                    <span class="schicht__marke" aria-hidden="true">
+                      <span class="schicht__linie" />
+                      <span class="schicht__name">{s.titel}</span>
+                    </span>
+                    <span class="nur-sr">{s.titel}, {s.mass}. {s.text}</span>
+                  </button>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { beobachteFortschritt } from '../scripts/scrollFortschritt';
+
+  const strecke = document.querySelector<HTMLElement>('[data-aufbau]');
+  const buehne = document.querySelector<HTMLElement>('[data-aufbau-buehne]');
+  const knoepfe = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-schicht]'));
+  const tafeln = Array.from(document.querySelectorAll<HTMLElement>('[data-tafel]'));
+
+  if (strecke && buehne && knoepfe.length) {
+    /** Sobald der Nutzer selbst waehlt, hoert der Scroll auf mitzusteuern. */
+    let selbstGewaehlt = false;
+    let aktiv = 0;
+
+    const waehle = (index: number) => {
+      if (index === aktiv) return;
+      aktiv = index;
+      knoepfe.forEach((k, i) => (k.dataset.aktiv = i === index ? 'ja' : 'nein'));
+      tafeln.forEach((t, i) => (t.dataset.aktiv = i === index ? 'ja' : 'nein'));
+    };
+
+    knoepfe.forEach((knopf, i) => {
+      knopf.addEventListener('click', () => {
+        selbstGewaehlt = true;
+        waehle(i);
+      });
+      // Beim Durchtabben mitwandern, damit Tastaturnutzer denselben
+      // Zusammenhang sehen wie alle anderen.
+      knopf.addEventListener('focus', () => {
+        selbstGewaehlt = true;
+        waehle(i);
+      });
+    });
+
+    const wenigerBewegung = matchMedia('(prefers-reduced-motion: reduce)');
+    /* Kleine, flache Schirme fassen den gepinnten Aufbau nicht. Dort laeuft
+       die Sektion normal mit und der Aufbau liegt von Anfang an offen;
+       erkunden laesst er sich weiter per Tipp. Siehe gleiche Abfrage im CSS. */
+    const zuFlach = matchMedia('(max-height: 700px) and (max-width: 61.99rem)');
+
+    /** Ruhezustand und voll aufgefaechert. Nie ganz zu, sonst steht am
+        Sektionsanfang ein flacher Balken statt eines Schichtaufbaus. */
+    const SPREAD_ZU = 4;
+    const SPREAD_AUF = 16;
+
+    if (wenigerBewegung.matches || zuFlach.matches) {
+      // Ohne Bewegung liegt der Aufbau von Anfang an auseinander.
+      buehne.style.setProperty('--spread', String(SPREAD_AUF));
+      buehne.style.setProperty('--marken', '1');
+    } else {
+      // Erste 22 Prozent: der Aufbau faehrt auseinander.
+      // Danach: die Erklaerung wandert durch die Schichten.
+      beobachteFortschritt(strecke, (p) => {
+        const oeffnen = Math.min(1, p / 0.22);
+        buehne.style.setProperty(
+          '--spread',
+          (SPREAD_ZU + oeffnen * (SPREAD_AUF - SPREAD_ZU)).toFixed(2),
+        );
+        buehne.style.setProperty('--marken', (0.25 + oeffnen * 0.75).toFixed(3));
+
+        if (selbstGewaehlt) return;
+        const rest = Math.max(0, (p - 0.22) / 0.78);
+        waehle(Math.min(knoepfe.length - 1, Math.floor(rest * knoepfe.length)));
+      });
+    }
+  }
+</script>
+
+<style>
+  /* Genug Scrollweg, damit acht Schichten der Reihe nach erklaert werden,
+     ohne dass man durch Luft scrollt. */
+  .aufbau__strecke {
+    position: relative;
+    min-height: 100dvh;
+  }
+  :global(.js) .aufbau__strecke {
+    height: 320vh;
+  }
+
+  .aufbau__buehne {
+    /* --skala streckt den Schnitt auf grossen Schirmen, ohne die
+       Verhaeltnisse der Schichtdicken zu veraendern. */
+    --spread: 16;
+    --marken: 1;
+    --skala: 1;
+    --dehnung: 0.7px;
+    position: sticky;
+    top: 0;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    /* Unten Luft fuer die Sticky-Kontaktleiste auf dem Telefon. */
+    padding-block: 5rem 4.5rem;
+  }
+  :global(.js) .aufbau__buehne {
+    /* Nicht bei null anfangen: sonst steht am Sektionsanfang ein flacher
+       Balken statt eines erkennbaren Schichtaufbaus. */
+    --spread: 4;
+    --marken: 0.25;
+  }
+
+  .aufbau__innen {
+    display: grid;
+    gap: clamp(2rem, 5vw, 4rem);
+    width: 100%;
+    align-items: center;
+  }
+
+  .aufbau__text h2 {
+    /* Eigene, kleinere Stufe als die uebrigen Sektionen: der Text teilt
+       sich die Viewporthoehe hier mit dem Schnitt und der Tafel. */
+    font-size: clamp(1.6rem, 1.05rem + 1.7vw, 2.5rem);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    max-width: 20ch;
+    margin-bottom: 0.85rem;
+  }
+  .aufbau__intro {
+    max-width: 46ch;
+    color: var(--color-kreide);
+    font-size: 0.98rem;
+  }
+
+  /* Tafel: alle Erklaerungen liegen uebereinander, nur eine ist sichtbar.
+     Die Hoehe richtet sich nach der laengsten, damit nichts springt. */
+  .aufbau__tafel {
+    position: relative;
+    display: grid;
+    grid-template-areas: 'stapel';
+    margin-top: 1.5rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--color-linie);
+    /* Die Hoehe richtet sich nach der laengsten Erklaerung, damit beim
+       Wechsel nichts springt. Der Wert deckt den laengsten Text ab. */
+    min-height: 12.5rem;
+  }
+  .tafel {
+    grid-area: stapel;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .tafel[data-aktiv='ja'] {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  .tafel__mass {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.78rem;
+    font-stretch: 100%;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-patina);
+    margin-bottom: 0.4rem;
+  }
+  .tafel__titel {
+    font-size: 1.35rem;
+    font-stretch: 115%;
+    margin-bottom: 0.5rem;
+  }
+  .tafel__text {
+    max-width: 52ch;
+    color: var(--color-kreide);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Der Schnitt                                                         */
+  /* ------------------------------------------------------------------ */
+
+  .aufbau__schnitt {
+    display: flex;
+    justify-content: center;
+  }
+
+  .stapel {
+    position: relative;
+    width: min(100%, 26rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .schicht {
+    /* --i ist der Abstand zur Stapelmitte, positiv nach unten. So faehrt
+       der Aufbau symmetrisch auseinander statt nach unten wegzurutschen.
+       --dehnung drosselt den Ausschlag auf schmalen Schirmen. */
+    transform: translateY(calc(var(--i) * var(--spread) * var(--dehnung)));
+    transition: transform 0.05s linear;
+  }
+
+  .schicht button {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .schicht__flaeche {
+    display: block;
+    height: calc(var(--h) * var(--skala));
+    background-color: var(--farbe);
+    border-radius: 1px;
+    outline: 1px solid color-mix(in srgb, black 35%, transparent);
+    outline-offset: -1px;
+    transition: filter 0.2s ease;
+  }
+
+  .schicht button:hover .schicht__flaeche,
+  .schicht button[data-aktiv='ja'] .schicht__flaeche {
+    filter: brightness(1.35);
+  }
+  .schicht button[data-aktiv='ja'] .schicht__flaeche {
+    outline: 1px solid var(--color-patina);
+  }
+
+  /* Oberflaechen aus dem Gewerk, nicht aus dem Musterkatalog. */
+  [data-muster='ziegel'] .schicht__flaeche {
+    background-image: repeating-linear-gradient(
+      to right,
+      color-mix(in srgb, white 12%, transparent) 0 2px,
+      transparent 2px 7px,
+      color-mix(in srgb, black 30%, transparent) 7px 9px,
+      transparent 9px 20px
+    );
+  }
+  [data-muster='latte'] .schicht__flaeche {
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0 26px,
+      color-mix(in srgb, black 45%, transparent) 26px 32px
+    );
+  }
+  [data-muster='bahn'] .schicht__flaeche {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, white 14%, transparent),
+      transparent 60%
+    );
+  }
+  [data-muster='daemmung'] .schicht__flaeche {
+    background-image: repeating-linear-gradient(
+      -58deg,
+      color-mix(in srgb, white 9%, transparent) 0 3px,
+      transparent 3px 9px
+    );
+  }
+  [data-muster='holz'] .schicht__flaeche {
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0 62px,
+      color-mix(in srgb, black 50%, transparent) 62px 74px
+    );
+  }
+  [data-muster='platte'] .schicht__flaeche {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, white 22%, transparent),
+      transparent
+    );
+  }
+
+  /* Bemassung am rechten Rand, wie in einer Schnittzeichnung. */
+  .schicht__marke {
+    position: absolute;
+    left: calc(100% + 0.6rem);
+    top: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transform: translateY(-50%);
+    opacity: var(--marken);
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+  }
+  .schicht__linie {
+    display: block;
+    width: 1.1rem;
+    height: 1px;
+    background: var(--color-falz);
+  }
+  .schicht__name {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-stretch: 100%;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-kreide);
+  }
+  .schicht button[data-aktiv='ja'] .schicht__name {
+    color: var(--color-patina);
+  }
+  .schicht button[data-aktiv='ja'] .schicht__linie {
+    background: var(--color-patina);
+    width: 1.6rem;
+  }
+
+  /* Unter 62rem stehen die Bemassungen im Weg. */
+  @media (max-width: 61.99rem) {
+    .schicht__marke {
+      display: none;
+    }
+    .stapel {
+      width: 100%;
+      /* Platz fuer den Ausschlag: der Stapel faehrt ueber seine eigene
+         Box hinaus, ohne sie zu vergroessern. */
+      margin-block: 2.25rem;
+    }
+    .aufbau__innen {
+      gap: 1.5rem;
+    }
+    .aufbau__tafel {
+      min-height: 11rem;
+      margin-top: 1.25rem;
+      padding-top: 1.15rem;
+    }
+    /* Auf dem Telefon fuehrt das Bild, der Text folgt darunter. */
+    .aufbau__schnitt {
+      order: -1;
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .aufbau__innen {
+      grid-template-columns: 1fr 0.9fr;
+    }
+    .aufbau__buehne {
+      --skala: 1.55;
+      --dehnung: 1px;
+      padding-block: 6rem 4rem;
+    }
+    .stapel {
+      /* Platz fuer die Bemassungen rechts. */
+      margin-right: 9rem;
+    }
+  }
+  @media (min-width: 80rem) {
+    .aufbau__buehne {
+      --skala: 1.85;
+    }
+  }
+
+  /* Flache Fenster, etwa ein Notebook mit 768 Pixel Hoehe oder ein quer
+     gehaltenes Telefon: Schnitt und Schrift zurueckdrehen, damit die
+     Erklaerung nicht unten abgeschnitten wird. */
+  @media (max-height: 800px) and (min-width: 62rem) {
+    .aufbau__buehne {
+      --skala: 1.2;
+      padding-block: 5rem 3rem;
+    }
+    .aufbau__text h2 {
+      font-size: 1.6rem;
+    }
+    .aufbau__intro {
+      font-size: 0.92rem;
+    }
+    .aufbau__tafel {
+      min-height: 10.5rem;
+    }
+  }
+
+  /* Kein Pinning, wo es nicht hinpasst: bei abgeschalteter Bewegung und auf
+     kleinen, flachen Schirmen laeuft die Sektion normal mit. Der Aufbau
+     liegt dann von Anfang an offen, erkunden geht weiter per Tipp.
+     Dieselbe Abfrage steht im Skript. */
+  @media (prefers-reduced-motion: reduce),
+    ((max-height: 700px) and (max-width: 61.99rem)) {
+    :global(.js) .aufbau__strecke {
+      height: auto;
+      min-height: 0;
+    }
+    :global(.js) .aufbau__buehne {
+      position: static;
+      min-height: 0;
+      padding-block: 4.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .schicht,
+    .tafel,
+    .schicht__flaeche,
+    .schicht__marke {
+      transition: none;
+    }
+  }
+</style>

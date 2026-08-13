@@ -1,0 +1,528 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb, mailLink, telLink, whatsappLink } from '../data/betrieb';
+
+/**
+ * Kontaktformular ueber Formspree.
+ *
+ * Formspree braucht keinen eigenen Server, passt also zum statischen Build.
+ * Die Formular-ID kommt aus der Umgebungsvariable PUBLIC_FORMSPREE_ID.
+ * Wie sie einzutragen ist, steht in CLAUDE.md.
+ */
+const formularId = import.meta.env.PUBLIC_FORMSPREE_ID || 'FORMULAR-ID';
+const ziel = `https://formspree.io/f/${formularId}`;
+const eingerichtet = formularId !== 'FORMULAR-ID';
+
+const anliegen = [
+  { wert: 'steildach', titel: 'Steildach: neu decken oder sanieren' },
+  { wert: 'flachdach', titel: 'Flachdach oder Terrasse abdichten' },
+  { wert: 'blechdach', titel: 'Blechdach, Falzarbeiten, Spenglerei' },
+  { wert: 'rinne', titel: 'Dachrinne oder Entwässerung' },
+  { wert: 'reparatur', titel: 'Reparatur oder Sturmschaden' },
+  { wert: 'wartung', titel: 'Wartung oder Dachcheck' },
+  { wert: 'sonstiges', titel: 'Etwas anderes' },
+];
+---
+
+<section class="abschnitt kontakt" id="kontakt" aria-labelledby="kontakt-titel">
+  <div class="bahn kontakt__innen">
+    <div class="kontakt__seite eintritt">
+      <h2 id="kontakt-titel">Sagen Sie uns, worum es geht.</h2>
+      <p class="kontakt__zeile">
+        Am schnellsten geht ein Anruf. Wenn es warten kann, schreiben Sie uns. Wir melden
+        uns in der Regel am nächsten Werktag.
+      </p>
+
+      <ul class="kontakt__wege">
+        <li>
+          <a href={telLink}>
+            <Icon name="ph:phone-fill" aria-hidden="true" />
+            <span>
+              <span class="kontakt__weg-titel zahlen">{betrieb.telefon.anzeige}</span>
+              <span class="kontakt__weg-zeile">{betrieb.oeffnungszeiten.anzeige}</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href={whatsappLink('Guten Tag, ')} target="_blank" rel="noopener noreferrer">
+            <Icon name="ph:whatsapp-logo-fill" aria-hidden="true" />
+            <span>
+              <span class="kontakt__weg-titel">WhatsApp</span>
+              <span class="kontakt__weg-zeile">Fotos vom Schaden gehen hier am schnellsten</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a href={mailLink}>
+            <Icon name="ph:envelope-simple-fill" aria-hidden="true" />
+            <span>
+              <span class="kontakt__weg-titel">{betrieb.email}</span>
+              <span class="kontakt__weg-zeile">Für Unterlagen und Angebote</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="kontakt__adressen">
+        {
+          betrieb.standorte.map((s) => (
+            <div>
+              <p class="kontakt__rolle">{s.rolle}</p>
+              <p>
+                {s.strasse}
+                <br />
+                {s.plz} {s.ort}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="kontakt__formular eintritt">
+      {
+        !eingerichtet && (
+          <p class="einrichten">
+            <strong>Hinweis für die Einrichtung:</strong> Der Formularversand ist noch nicht
+            aktiv. In CLAUDE.md steht unter „Formspree einrichten“, welcher Schlüssel wo
+            einzutragen ist. Telefon und WhatsApp funktionieren bereits.
+          </p>
+        )
+      }
+
+      <form action={ziel} method="POST" data-kontakt>
+        <p
+          class="status"
+          data-kontakt-status
+          data-art="nichts"
+          role="status"
+          tabindex="-1"
+          hidden
+        >
+        </p>
+
+        <div class="paare">
+          <div class="paar">
+            <label class="etikett" for="name">Name</label>
+            <input class="feld" type="text" id="name" name="name" autocomplete="name" required />
+            <p class="fehler" data-fehler="name"></p>
+          </div>
+
+          <div class="paar">
+            <label class="etikett" for="telefon">Telefon</label>
+            <input
+              class="feld"
+              type="tel"
+              id="telefon"
+              name="telefon"
+              autocomplete="tel"
+              inputmode="tel"
+              required
+            />
+            <p class="fehler" data-fehler="telefon"></p>
+          </div>
+
+          <div class="paar">
+            <label class="etikett" for="email">E-Mail</label>
+            <input
+              class="feld"
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+            <p class="fehler" data-fehler="email"></p>
+          </div>
+
+          <div class="paar">
+            <label class="etikett" for="objekt">
+              Adresse des Objekts <span class="freiwillig">freiwillig</span>
+            </label>
+            <input
+              class="feld"
+              type="text"
+              id="objekt"
+              name="objektadresse"
+              autocomplete="street-address"
+              placeholder="Strasse, PLZ, Ort"
+            />
+            <p class="fehler" data-fehler="objektadresse"></p>
+          </div>
+
+          <div class="paar paar--breit">
+            <label class="etikett" for="anliegen">Worum geht es</label>
+            <select class="feld" id="anliegen" name="anliegen" required>
+              {anliegen.map((a) => <option value={a.wert}>{a.titel}</option>)}
+            </select>
+            <p class="fehler" data-fehler="anliegen"></p>
+          </div>
+
+          <div class="paar paar--breit">
+            <label class="etikett" for="nachricht">Nachricht</label>
+            <textarea
+              class="feld"
+              id="nachricht"
+              name="nachricht"
+              rows="6"
+              required
+              placeholder="Was ist zu tun, wie alt ist das Dach, seit wann besteht das Problem."
+            ></textarea>
+            <p class="fehler" data-fehler="nachricht"></p>
+          </div>
+
+          <div class="paar paar--breit">
+            <span class="etikett">Fotos <span class="freiwillig">freiwillig</span></span>
+            <label class="datei" for="foto">
+              <Icon name="ph:image-square" aria-hidden="true" />
+              <span>Fotos auswählen</span>
+              <input type="file" id="foto" name="foto" accept="image/*" multiple />
+            </label>
+            <p class="datei__name" data-dateiname></p>
+            <p class="hilfe">
+              Ein Bild vom Schaden spart oft den ersten Termin. Vom Boden aus fotografiert
+              genügt.
+            </p>
+          </div>
+        </div>
+
+        {/* Honigtopf gegen Spam. Fuer Menschen unsichtbar und aus der
+            Tabreihenfolge genommen, kein Captcha von Google. */}
+        <div class="honigtopf" aria-hidden="true">
+          <label for="firmenname">Firmenname bitte frei lassen</label>
+          <input type="text" id="firmenname" name="firmenname" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <label class="zustimmung" for="datenschutz">
+          <input type="checkbox" id="datenschutz" name="datenschutz" value="ja" required />
+          <span class="zustimmung__kasten" aria-hidden="true"></span>
+          <span>
+            Ich habe die <a href="/datenschutz">Datenschutzerklärung</a> gelesen und bin damit
+            einverstanden, dass meine Angaben zur Bearbeitung meiner Anfrage gespeichert werden.
+          </span>
+        </label>
+        <p class="fehler" data-fehler="datenschutz"></p>
+
+        <button type="submit" class="knopf knopf--patina absenden" data-kontakt-senden>
+          Anfrage stellen
+        </button>
+
+        <p class="hilfe hilfe--fuss">
+          Pflichtfelder sind Name, Telefon, E-Mail, Anliegen und Nachricht. Wir geben Ihre
+          Daten nicht weiter.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { starteKontakt } from '../scripts/kontakt';
+  starteKontakt();
+</script>
+
+<style>
+  .kontakt__innen {
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 4.5rem);
+    align-items: start;
+  }
+
+  .kontakt__seite h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    max-width: 15ch;
+    margin-bottom: 1rem;
+  }
+  .kontakt__zeile {
+    color: var(--color-kreide);
+    max-width: 46ch;
+  }
+
+  .kontakt__wege {
+    display: grid;
+    gap: 0;
+    margin: 2rem 0;
+  }
+  .kontakt__wege li + li {
+    border-top: 1px solid var(--color-linie);
+  }
+  .kontakt__wege a {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    align-items: center;
+    padding: 1.1rem 0.5rem 1.1rem 0;
+    transition: background-color 0.18s ease, padding-left 0.18s ease;
+  }
+  .kontakt__wege a:hover {
+    background: var(--color-zink);
+    padding-left: 0.5rem;
+  }
+  .kontakt__wege :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+    color: var(--color-patina);
+  }
+  .kontakt__weg-titel {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 1rem;
+  }
+  .kontakt__weg-zeile {
+    display: block;
+    font-size: 0.84rem;
+    color: var(--color-kreide);
+    margin-top: 0.1rem;
+  }
+
+  .kontakt__adressen {
+    display: grid;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+  }
+  .kontakt__rolle {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 650;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 0.3rem;
+  }
+  .kontakt__adressen p:last-child {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /* Formular ------------------------------------------------------------ */
+
+  .kontakt__formular {
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    padding: clamp(1.25rem, 3.5vw, 2.25rem);
+  }
+
+  .einrichten {
+    margin-bottom: 1.5rem;
+    padding: 0.85rem 1rem;
+    background: var(--color-ziegel-tief);
+    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-ziegel);
+  }
+
+  .status {
+    margin-bottom: 1.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: 2px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    border: 1px solid;
+  }
+  .status[data-art='laeuft'] {
+    border-color: var(--color-linie);
+    color: var(--color-kreide);
+    background: var(--color-bitumen);
+  }
+  .status[data-art='fehler'] {
+    border-color: color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    background: var(--color-ziegel-tief);
+    color: var(--color-ziegel);
+  }
+  .status[data-art='fertig'] {
+    border-color: color-mix(in srgb, var(--color-patina) 55%, transparent);
+    background: var(--color-patina-tief);
+    color: var(--color-patina);
+  }
+
+  .paare {
+    display: grid;
+    gap: 1.15rem;
+  }
+  @media (min-width: 34rem) {
+    .paare {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .paar--breit {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .freiwillig {
+    font-size: 0.85em;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-schiefer);
+    text-transform: none;
+  }
+
+  select.feld {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-kreide) 50%),
+      linear-gradient(135deg, var(--color-kreide) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) calc(50% + 1px),
+      calc(100% - 13px) calc(50% + 1px);
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 2.5rem;
+  }
+
+  textarea.feld {
+    resize: vertical;
+    min-height: 8rem;
+    line-height: 1.6;
+  }
+
+  .fehler:empty {
+    display: none;
+  }
+  .fehler {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    color: var(--color-ziegel);
+  }
+
+  .datei {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.1rem;
+    border: 1px dashed var(--color-falz);
+    border-radius: var(--radius-bahn);
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+  .datei:hover {
+    border-color: var(--color-patina);
+    background: var(--color-zink-hell);
+  }
+  .datei :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--color-patina);
+  }
+  .datei input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .datei:has(input:focus-visible) {
+    outline: 2px solid var(--color-patina);
+    outline-offset: 3px;
+  }
+  .datei__name:empty {
+    display: none;
+  }
+  .datei__name {
+    margin-top: 0.5rem;
+    font-size: 0.84rem;
+    color: var(--color-patina);
+  }
+
+  .hilfe {
+    margin-top: 0.55rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--color-kreide);
+  }
+  .hilfe--fuss {
+    margin-top: 1rem;
+    color: var(--color-schiefer);
+  }
+
+  .honigtopf {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .zustimmung {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.7rem;
+    align-items: start;
+    margin-top: 1.5rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--color-kreide);
+    cursor: pointer;
+    position: relative;
+  }
+  .zustimmung input {
+    position: absolute;
+    opacity: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .zustimmung__kasten {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.1rem;
+    border: 1px solid var(--color-falz);
+    border-radius: 2px;
+    background: var(--color-bitumen);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .zustimmung:has(input:checked) .zustimmung__kasten {
+    background: var(--color-patina);
+    border-color: var(--color-patina);
+  }
+  .zustimmung:has(input:checked) .zustimmung__kasten::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 1px;
+    width: 5px;
+    height: 11px;
+    border: solid var(--color-bitumen);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .zustimmung:has(input:focus-visible) .zustimmung__kasten {
+    outline: 2px solid var(--color-patina);
+    outline-offset: 3px;
+  }
+  .zustimmung a {
+    color: var(--color-patina);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .absenden {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding-block: 1rem;
+    font-size: 1rem;
+  }
+  .absenden:disabled {
+    opacity: 0.55;
+    cursor: progress;
+  }
+
+  @media (min-width: 62rem) {
+    .kontakt__innen {
+      grid-template-columns: 0.85fr 1.15fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kontakt__wege a,
+    .datei {
+      transition: none;
+    }
+  }
+</style>

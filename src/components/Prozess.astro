@@ -1,0 +1,140 @@
+---
+/**
+ * Prozess vom Erstkontakt bis zur Abnahme.
+ *
+ * Nummeriert, weil hier tatsaechlich eine Reihenfolge existiert: Schritt 4
+ * ohne Schritt 3 gibt es nicht. Die Nummer ist Information, keine Deko.
+ *
+ * Aufgedeckt beim Scrollen mit IntersectionObserver, nicht mit einer
+ * Scroll-Bibliothek: es ist ein Eintritts-Effekt, mehr braucht es nicht.
+ */
+const schritte = [
+  {
+    titel: 'Anruf oder Nachricht',
+    text: 'Sie schildern kurz, worum es geht. Wenn sich die Frage am Telefon klären lässt, klären wir sie am Telefon.',
+  },
+  {
+    titel: 'Termin vor Ort',
+    text: 'Wir sehen uns das Dach an, messen auf und fotografieren, was auffällt. Das kostet Sie nichts.',
+  },
+  {
+    titel: 'Angebot',
+    text: 'Schriftlich, nach Positionen aufgeschlüsselt, mit Mengen und Preisen. Sie sehen, wofür welcher Betrag anfällt.',
+  },
+  {
+    titel: 'Termin und Gerüst',
+    text: 'Nach Ihrer Freigabe stimmen wir den Zeitraum ab. Gerüst und Container organisieren wir mit.',
+  },
+  {
+    titel: 'Ausführung',
+    text: 'Wir arbeiten in einem Zug durch. Kommt beim Abdecken etwas zum Vorschein, erfahren Sie es am selben Tag, nicht in der Schlussrechnung.',
+  },
+  {
+    titel: 'Abnahme',
+    text: 'Wir gehen gemeinsam über die Arbeit. Sie bekommen die Dokumentation und die Gewährleistung nach VOB.',
+  },
+];
+---
+
+<section class="abschnitt prozess" id="ablauf" aria-labelledby="prozess-titel">
+  <div class="bahn">
+    <div class="prozess__kopf eintritt">
+      <h2 id="prozess-titel">Wie es abläuft.</h2>
+      <p>
+        Sechs Schritte, in dieser Reihenfolge. Sie wissen an jedem Punkt, was als Nächstes
+        passiert und wer sich meldet.
+      </p>
+    </div>
+
+    <ol class="prozess__liste">
+      {
+        schritte.map((s, i) => (
+          <li class="schritt eintritt" style={`--verzug:${i * 70}ms`}>
+            <span class="schritt__nummer zahlen" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class="schritt__inhalt">
+              <h3>{s.titel}</h3>
+              <p>{s.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .prozess__kopf {
+    max-width: 50ch;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .prozess__kopf h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 1rem;
+  }
+  .prozess__kopf p {
+    color: var(--color-kreide);
+  }
+
+  .prozess__liste {
+    display: grid;
+    gap: 0;
+    counter-reset: schritt;
+  }
+
+  .schritt {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 1.25rem;
+    padding: 1.6rem 0;
+    position: relative;
+    transition-delay: var(--verzug);
+  }
+  .schritt + .schritt {
+    border-top: 1px solid var(--color-linie);
+  }
+
+  .schritt__nummer {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-patina);
+    letter-spacing: 0.02em;
+    padding-top: 0.1rem;
+  }
+
+  .schritt__inhalt h3 {
+    font-size: 1.15rem;
+    font-stretch: 112%;
+    margin-bottom: 0.35rem;
+  }
+  .schritt__inhalt p {
+    color: var(--color-kreide);
+    max-width: 62ch;
+    font-size: 0.98rem;
+  }
+
+  @media (min-width: 62rem) {
+    .schritt {
+      grid-template-columns: 4rem 18rem 1fr;
+      gap: 2rem;
+      align-items: baseline;
+      padding: 2rem 0;
+    }
+    .schritt__inhalt {
+      display: contents;
+    }
+    .schritt__inhalt h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .schritt {
+      transition-delay: 0ms;
+    }
+  }
+</style>

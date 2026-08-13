@@ -1,0 +1,178 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb, telLink } from '../data/betrieb';
+
+const navigation = [
+  { titel: 'Leistungen', ziel: '/leistungen' },
+  { titel: 'Projekte', ziel: '/projekte' },
+  { titel: 'Kostenrechner', ziel: '/#kostenrechner' },
+  { titel: 'Einsatzgebiet', ziel: '/#einsatzgebiet' },
+];
+---
+
+<header class="kopf">
+  <div class="bahn kopf__innen">
+    <a href="/" class="kopf__marke" aria-label="A&D Bedachungen und Spenglerei, zur Startseite">
+      <span class="kopf__zeichen" aria-hidden="true"></span>
+      <span class="kopf__name">
+        <strong>A&D</strong>
+        <span>Bedachungen und Spenglerei</span>
+      </span>
+    </a>
+
+    <nav class="kopf__nav" aria-label="Hauptnavigation">
+      {navigation.map((n) => <a href={n.ziel}>{n.titel}</a>)}
+    </nav>
+
+    <div class="kopf__aktionen">
+      <a class="kopf__tel" href={telLink}>
+        <Icon name="ph:phone-fill" aria-hidden="true" />
+        <span>{betrieb.telefon.anzeige}</span>
+      </a>
+      <a class="knopf knopf--patina kopf__cta" href="/#kontakt">Anfrage stellen</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .kopf {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 40;
+    /* Der Grund wird erst beim Scrollen dicht, damit der Hero oben offen wirkt. */
+    background: color-mix(in srgb, var(--color-bitumen) 82%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-linie) 70%, transparent);
+  }
+
+  .kopf__innen {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    /* Hoehe bleibt unter 80 Pixel, auch mit Schaltflaeche. */
+    height: 4.25rem;
+  }
+
+  .kopf__marke {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  /* Zwei gekantete Scharen, dazwischen der Falz. Das Zeichen ist der Falz
+     selbst, kein Haus-Piktogramm. */
+  .kopf__zeichen {
+    width: 22px;
+    height: 26px;
+    background:
+      linear-gradient(to right, var(--color-falz) 0 2px, transparent 2px) 0 0 / 100% 100%,
+      linear-gradient(
+        to right,
+        var(--color-zink) 0 9px,
+        var(--color-patina) 9px 13px,
+        var(--color-zink) 13px 22px
+      );
+    border-radius: 1px;
+  }
+
+  .kopf__name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    font-family: var(--font-display);
+  }
+  .kopf__name strong {
+    font-size: 1rem;
+    font-weight: 700;
+    font-stretch: 115%;
+    letter-spacing: 0.01em;
+  }
+  .kopf__name span {
+    font-size: 0.66rem;
+    font-stretch: 100%;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-kreide);
+  }
+
+  .kopf__nav {
+    display: none;
+    gap: 1.75rem;
+    font-size: 0.92rem;
+  }
+  .kopf__nav a {
+    color: var(--color-kreide);
+    transition: color 0.18s ease;
+    position: relative;
+    padding-block: 0.4rem;
+  }
+  .kopf__nav a:hover {
+    color: var(--color-zinkweiss);
+  }
+  /* Unterstreichung als Falzlinie, nicht als Standard-Underline. */
+  .kopf__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: 0;
+    height: 2px;
+    background: var(--color-patina);
+    transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .kopf__nav a:hover::after {
+    right: 0;
+  }
+
+  .kopf__aktionen {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .kopf__tel {
+    display: none;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-zinkweiss);
+  }
+  .kopf__tel:hover {
+    color: var(--color-patina);
+  }
+  .kopf__tel :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-patina);
+  }
+
+  /* Auf dem Telefon uebernimmt die Sticky-Leiste unten die Aktionen. */
+  .kopf__cta {
+    display: none;
+  }
+
+  @media (min-width: 62rem) {
+    .kopf__nav,
+    .kopf__tel {
+      display: flex;
+    }
+  }
+  @media (min-width: 78rem) {
+    .kopf__cta {
+      display: inline-flex;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.88rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kopf__nav a::after {
+      transition: none;
+    }
+  }
+</style>

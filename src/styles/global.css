@@ -1,0 +1,518 @@
+@import 'tailwindcss';
+
+/* Selbst gehostete Schriften. Kein Google-Fonts-CDN: das uebertraegt bei
+   jedem Seitenaufruf die IP des Besuchers an Google und ist ohne
+   Einwilligung nicht DSGVO-konform. */
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/libre-franklin/wght.css';
+
+/* ---------------------------------------------------------------------------
+   Designtokens
+
+   Farbe kommt aus dem Gewerk, nicht aus dem Agentur-Baukasten:
+   Bitumenschwarz als Grund, Zinkgrau als Flaeche, Kupferpatina als einziger
+   Akzent, Ziegelrot ausschliesslich als Notfall-Signal.
+   Alle Werte sind gegen den Grund auf WCAG AA geprueft (Werte im Kommentar).
+--------------------------------------------------------------------------- */
+@theme {
+  --color-bitumen: #14181a; /* Grund. Bitumenbahn, nicht reines Schwarz. */
+  --color-zink: #21272b; /* Erhoehte Flaeche: eine Bahn auf dem Dach. */
+  --color-zink-hell: #2a3237; /* Hover, Eingabefelder. */
+  --color-linie: #333c42; /* Trennlinie, Rahmen. */
+  --color-falz: #5c676d; /* Falzkamm, das Licht auf der Kante. Nie fuer Text. */
+  --color-schiefer: #8f9aa0; /* Kleintext und Etiketten. 6,21:1 auf Bitumen,
+                                5,25:1 auf Zink, 4,53:1 auf Zink-hell. */
+  --color-kreide: #a5b0b5; /* Sekundaertext. 8,06:1 auf Bitumen. */
+  --color-zinkweiss: #e8ecec; /* Primaertext. 15,01:1 auf Bitumen. */
+  --color-patina: #4fb79e; /* Akzent. 7,32:1 auf Bitumen und umgekehrt. */
+  --color-patina-tief: #1c3b36; /* Gefuellte Flaeche hinter Patina-Text. */
+  --color-ziegel: #d2684a; /* Nur Sturmschaden. 4,95:1 beidseitig. */
+  --color-ziegel-tief: #2e1610; /* Ziegel darauf: 4,70:1. */
+
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Libre Franklin Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* Typo-Skala. Display waechst mit clamp, Body bleibt ruhig. */
+  --text-display: clamp(2.6rem, 1.4rem + 5.2vw, 6rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.03em;
+  /* Ueberschrift einer Unterseite: kleiner als der Hero, groesser als eine
+     Sektionsueberschrift. Ohne diese Stufe geraten lange Leistungsnamen
+     wie "Blechdach und Falzarbeiten" auf drei Zeilen. */
+  --text-seite: clamp(2.2rem, 1.35rem + 3.4vw, 4.4rem);
+  --text-seite--line-height: 0.98;
+  --text-seite--letter-spacing: -0.03em;
+  --text-titel: clamp(1.9rem, 1.2rem + 2.6vw, 3.4rem);
+  --text-titel--line-height: 1.03;
+  --text-titel--letter-spacing: -0.025em;
+  --text-unter: clamp(1.25rem, 1.05rem + 0.8vw, 1.65rem);
+  --text-unter--line-height: 1.2;
+  --text-unter--letter-spacing: -0.015em;
+  --text-lauf: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --text-lauf--line-height: 1.65;
+
+  --radius-bahn: 3px; /* Kantradius eines Blechzuschnitts. Mehr nicht. */
+}
+
+/* ---------------------------------------------------------------------------
+   Grundlagen
+--------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    color-scheme: dark;
+    /* Browser-Oberflaechen mitgestalten: Scrollbar und Auswahlfarbe
+       gehoeren sonst zu keinem Designsystem. */
+    scrollbar-color: var(--color-linie) var(--color-bitumen);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Ankersprunge landen unter der Kopfzeile. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--color-bitumen);
+    color: var(--color-zinkweiss);
+    font-family: var(--font-body);
+    font-size: var(--text-lauf);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-patina);
+    color: var(--color-bitumen);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    /* Der Breitenachse verdankt die Seite ihren Ton: gestreckt wie
+       gekantetes Blech, nicht wie eine Systemschrift. */
+    font-stretch: 112%;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Sichtbarer Fokus, ueberall, in Akzentfarbe. */
+  :focus-visible {
+    outline: 2px solid var(--color-patina);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Zahlen im Rechner und in Massangaben laufen tabellarisch, damit beim
+     Hochzaehlen nichts springt. */
+  .zahlen {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-stretch: 100%;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Der Falz: das Signaturelement.
+
+   Ein Doppelstehfalz ist eine hochgestellte, zweifach umgeschlagene Kante
+   zwischen zwei Blechbahnen. Er laeuft hier als schmale Saeule ueber die
+   volle Seitenhoehe. Beim Scrollen wandert die Falzzange nach unten: was
+   sie passiert hat, ist geschlossen (heller Grat), was darunter liegt,
+   steht noch offen. Die Seite wird beim Lesen zugefalzt.
+--------------------------------------------------------------------------- */
+.falz {
+  position: fixed;
+  top: 0;
+  left: max(0.75rem, calc((100vw - 90rem) / 2 + 0.75rem));
+  z-index: 30;
+  width: 9px;
+  height: 100vh;
+  height: 100dvh;
+  pointer-events: none;
+  contain: strict;
+}
+
+/* Offene Kante: nur ein stumpfer Steg, kein Licht darauf. */
+.falz__steg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0 3px,
+    color-mix(in srgb, var(--color-falz) 55%, transparent) 3px 5px,
+    transparent 5px
+  );
+}
+
+/* Geschlossener Falz: Schatten, Grat, Schatten. Drei Ebenen, weil eine
+   gekantete Blechkante genau so Licht faengt.
+
+   Angetrieben von einer nativen scroll-driven animation. Das laeuft in
+   unterstuetzenden Browsern ausserhalb des Hauptthreads und kostet kein
+   einziges Byte JavaScript. Wo das fehlt, steht der Falz fertig
+   geschlossen da und sieht genauso beabsichtigt aus. */
+.falz__geschlossen {
+  position: absolute;
+  inset: 0;
+  transform-origin: top;
+  background: linear-gradient(
+    to right,
+    transparent 0 1px,
+    color-mix(in srgb, var(--color-bitumen) 60%, black) 1px 3px,
+    color-mix(in srgb, var(--color-falz) 80%, white) 3px 5px,
+    color-mix(in srgb, var(--color-bitumen) 60%, black) 5px 7px,
+    transparent 7px
+  );
+}
+
+/* Die Falzzange: der Punkt, an dem gerade gearbeitet wird. */
+.falz__zange {
+  position: absolute;
+  left: 0;
+  top: -13px;
+  width: 9px;
+  height: 26px;
+  opacity: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0 2px,
+    var(--color-patina) 2px 7px,
+    transparent 7px
+  );
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .falz__geschlossen {
+      animation: falz-schliessen linear both;
+      animation-timeline: scroll(root block);
+    }
+    .falz__zange {
+      opacity: 1;
+      animation: zange-wandern linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes falz-schliessen {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes zange-wandern {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100dvh);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  /* Auf dem Telefon nimmt die Sticky-Kontaktleiste den Rand ein. */
+  .falz {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Wiederkehrende Bausteine
+--------------------------------------------------------------------------- */
+@utility bahn {
+  /* Eine Blechbahn: die inhaltliche Spalte der Seite. */
+  margin-inline: auto;
+  width: 100%;
+  max-width: 90rem;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 4rem;
+  }
+}
+
+@utility abschnitt {
+  padding-block: 5rem;
+  @media (width >= 48rem) {
+    padding-block: 7.5rem;
+  }
+  @media (width >= 80rem) {
+    padding-block: 9rem;
+  }
+}
+
+/* Einblenden beim Eintritt in den Viewport. Kein Effekt um seiner selbst
+   willen: er fuehrt das Auge in der Lesereihenfolge. Standardzustand ist
+   sichtbar, damit ohne JavaScript nichts fehlt. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .eintritt {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .js .eintritt[data-sichtbar] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Schaltflaechen ---------------------------------------------------------- */
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  /* Eine Zeile, immer. Ein umbrechendes CTA ist ein kaputtes CTA. */
+  white-space: nowrap;
+  padding: 0.9rem 1.5rem;
+  border-radius: var(--radius-bahn);
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-stretch: 105%;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.08s ease;
+}
+
+.knopf:active {
+  transform: translateY(1px);
+}
+
+.knopf--patina {
+  background: var(--color-patina);
+  color: var(--color-bitumen); /* 7,32:1 */
+}
+.knopf--patina:hover {
+  background: color-mix(in srgb, var(--color-patina) 85%, white);
+}
+
+.knopf--rand {
+  border: 1px solid var(--color-linie);
+  color: var(--color-zinkweiss);
+}
+.knopf--rand:hover {
+  border-color: var(--color-schiefer);
+  background: var(--color-zink);
+}
+
+.knopf--ziegel {
+  background: var(--color-ziegel);
+  color: var(--color-bitumen); /* 4,95:1 */
+}
+.knopf--ziegel:hover {
+  background: color-mix(in srgb, var(--color-ziegel) 85%, white);
+}
+
+/* Formularfelder ---------------------------------------------------------- */
+.feld {
+  width: 100%;
+  background: var(--color-zink-hell);
+  border: 1px solid var(--color-linie);
+  border-radius: var(--radius-bahn);
+  padding: 0.8rem 0.9rem;
+  color: var(--color-zinkweiss);
+  font: inherit;
+  font-size: 1rem;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+.feld::placeholder {
+  color: var(--color-kreide); /* 6,4:1 auf zink-hell, AA erfuellt */
+  opacity: 1;
+}
+.feld:hover {
+  border-color: var(--color-schiefer);
+}
+.feld:focus {
+  border-color: var(--color-patina);
+  background: var(--color-zink);
+}
+.feld[aria-invalid='true'] {
+  border-color: var(--color-ziegel);
+}
+
+.etikett {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-stretch: 105%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-kreide);
+}
+
+/* Bereichsregler: der Griff ist ein Blechzuschnitt, keine Systemkugel. */
+.regler {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2.5rem;
+  background: transparent;
+  cursor: ew-resize;
+}
+.regler::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--color-linie);
+  border-radius: 2px;
+}
+.regler::-moz-range-track {
+  height: 3px;
+  background: var(--color-linie);
+  border-radius: 2px;
+}
+.regler::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 30px;
+  margin-top: -13.5px;
+  border-radius: 2px;
+  background: var(--color-patina);
+  border: none;
+}
+.regler::-moz-range-thumb {
+  width: 14px;
+  height: 30px;
+  border: none;
+  border-radius: 2px;
+  background: var(--color-patina);
+}
+.regler:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--color-bitumen), 0 0 0 5px var(--color-patina);
+}
+.regler:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--color-bitumen), 0 0 0 5px var(--color-patina);
+}
+
+/* Nur fuer Screenreader */
+.nur-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Sprungmarke: erster fokussierbarer Punkt der Seite. */
+.sprungmarke {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 100;
+  background: var(--color-patina);
+  color: var(--color-bitumen);
+  padding: 0.7rem 1.1rem;
+  border-radius: var(--radius-bahn);
+  font-weight: 600;
+}
+.sprungmarke:focus {
+  top: 1rem;
+}
+
+/* Rechtstexte: Impressum und Datenschutzerklaerung teilen sich dieses
+   Satzbild. Eine Spalte, ruhige Masse, klare Zwischenueberschriften. */
+.recht {
+  padding-top: clamp(6.5rem, 13vh, 10rem);
+}
+.recht__innen {
+  max-width: 46rem;
+}
+.recht h1 {
+  font-size: var(--text-titel);
+  line-height: var(--text-titel--line-height);
+  letter-spacing: var(--text-titel--letter-spacing);
+  margin-bottom: 2rem;
+}
+.recht h2 {
+  font-size: 1.15rem;
+  font-stretch: 112%;
+  margin-top: 2.5rem;
+  margin-bottom: 0.7rem;
+}
+.recht p,
+.recht li {
+  color: var(--color-kreide);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+.recht p + p {
+  margin-top: 0.9rem;
+}
+.recht ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.recht a {
+  color: var(--color-patina);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.recht .recht__klein {
+  font-size: 0.85rem;
+  color: var(--color-schiefer);
+}
+.recht .recht__pruefen {
+  margin-bottom: 2rem;
+  padding: 1rem 1.15rem;
+  background: var(--color-ziegel-tief);
+  border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+  border-radius: 2px;
+  color: var(--color-ziegel);
+  font-size: 0.9rem;
+}
+
+/* Platzhalterbild, solange echte Projektfotos fehlen. Bewusst als
+   Baustellenmarkierung erkennbar, nicht als fertiges Bild getarnt. */
+.platzhalter {
+  display: grid;
+  place-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  background-color: var(--color-zink);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 14px,
+    color-mix(in srgb, var(--color-ziegel) 22%, transparent) 14px 28px
+  );
+  color: var(--color-kreide);
+}

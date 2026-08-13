@@ -1,0 +1,238 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Icon } from 'astro-icon/components';
+import Grundlayout from '../../layouts/Grundlayout.astro';
+import Kontakt from '../../components/Kontakt.astro';
+import Sturmschaden from '../../components/Sturmschaden.astro';
+import { leistungen } from '../../data/leistungen';
+
+export const getStaticPaths = (() =>
+  leistungen.map((l) => ({ params: { slug: l.slug }, props: { leistung: l } }))) satisfies GetStaticPaths;
+
+const { leistung } = Astro.props;
+const andere = leistungen.filter((l) => l.slug !== leistung.slug).slice(0, 4);
+---
+
+<Grundlayout
+  titel={`${leistung.seitentitel} | A&D Bedachungen`}
+  beschreibung={leistung.seitenbeschreibung}
+>
+  <article>
+    <section class="abschnitt kopfblock">
+      <div class="bahn">
+        <nav class="brotkrume" aria-label="Brotkrumennavigation">
+          <a href="/">Start</a>
+          <span aria-hidden="true">/</span>
+          <a href="/leistungen">Leistungen</a>
+        </nav>
+
+        <div class="kopfblock__innen">
+          <div>
+            <h1>{leistung.titel}</h1>
+            <p class="kopfblock__zeile">{leistung.text}</p>
+
+            {
+              !leistung.bestaetigt && (
+                <p class="pruefen">
+                  <strong>Zu bestätigen:</strong> Diese Leistung stand nicht auf der alten
+                  Website. Sie ist ergänzt, weil ein Dachdecker- und Spenglereibetrieb sie
+                  üblicherweise anbietet. Bitte prüfen, ob das zutrifft.
+                </p>
+              )
+            }
+
+            <div class="kopfblock__aktionen">
+              <a class="knopf knopf--patina" href="#kontakt">Anfrage stellen</a>
+              <a class="knopf knopf--rand" href="/#kostenrechner">Kosten überschlagen</a>
+            </div>
+          </div>
+
+          <div class="umfang">
+            <h2 class="umfang__titel">Was dazugehört</h2>
+            <ul>
+              {
+                leistung.umfang.map((u) => (
+                  <li>
+                    <Icon name="ph:check" aria-hidden="true" />
+                    <span>{u}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {leistung.slug === 'sturmschaden' && <Sturmschaden />}
+
+    <section class="abschnitt weitere">
+      <div class="bahn">
+        <h2 class="weitere__titel">Auch am Dach</h2>
+        <ul class="weitere__liste">
+          {
+            andere.map((l) => (
+              <li>
+                <a href={`/leistungen/${l.slug}`}>
+                  <Icon name={l.icon} aria-hidden="true" />
+                  <span>{l.titel}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <Kontakt />
+  </article>
+</Grundlayout>
+
+<style>
+  .kopfblock {
+    padding-top: clamp(6.5rem, 13vh, 10rem);
+  }
+
+  .brotkrume {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--color-schiefer);
+    margin-bottom: 2rem;
+  }
+  .brotkrume a:hover {
+    color: var(--color-patina);
+  }
+
+  .kopfblock__innen {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .kopfblock h1 {
+    font-size: var(--text-seite);
+    line-height: var(--text-seite--line-height);
+    letter-spacing: var(--text-seite--letter-spacing);
+    font-stretch: 118%;
+    max-width: 13ch;
+    margin-bottom: 1.25rem;
+  }
+  .kopfblock__zeile {
+    max-width: 58ch;
+    color: var(--color-kreide);
+  }
+
+  .pruefen {
+    margin-top: 1.5rem;
+    padding: 0.85rem 1rem;
+    background: var(--color-ziegel-tief);
+    border: 1px dashed color-mix(in srgb, var(--color-ziegel) 55%, transparent);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-ziegel);
+    max-width: 58ch;
+  }
+
+  .kopfblock__aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 2rem;
+  }
+
+  .umfang {
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    border-radius: var(--radius-bahn);
+    padding: clamp(1.25rem, 3vw, 1.9rem);
+  }
+  .umfang__titel {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 1.1rem;
+  }
+  .umfang ul {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .umfang li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.65rem;
+    align-items: start;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .umfang :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.22rem;
+    color: var(--color-patina);
+  }
+
+  .weitere {
+    padding-block: clamp(3rem, 6vw, 4.5rem);
+    border-top: 1px solid var(--color-linie);
+  }
+  .weitere__titel {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 1.25rem;
+  }
+  .weitere__liste {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .weitere__liste a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-stretch: 105%;
+    transition: color 0.18s ease;
+  }
+  .weitere__liste a:hover {
+    color: var(--color-patina);
+  }
+  .weitere__liste :global(svg) {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--color-patina);
+  }
+
+  @media (min-width: 55rem) {
+    .weitere__liste {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .kopfblock__innen {
+      grid-template-columns: 1.25fr 0.9fr;
+      gap: 4rem;
+    }
+    .weitere__liste {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .weitere__liste a {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,235 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb, mailLink, telLink } from '../data/betrieb';
+import { leistungen } from '../data/leistungen';
+
+const jahr = new Date().getFullYear();
+const spalten = [
+  {
+    titel: 'Leistungen',
+    eintraege: leistungen
+      .slice(0, 5)
+      .map((l) => ({ titel: l.titel, ziel: `/leistungen/${l.slug}` })),
+  },
+  {
+    titel: 'Seite',
+    eintraege: [
+      { titel: 'Alle Leistungen', ziel: '/leistungen' },
+      { titel: 'Projekte', ziel: '/projekte' },
+      { titel: 'Kostenrechner', ziel: '/#kostenrechner' },
+      { titel: 'Ablauf', ziel: '/#ablauf' },
+      { titel: 'Einsatzgebiet', ziel: '/#einsatzgebiet' },
+    ],
+  },
+  {
+    titel: 'Rechtliches',
+    eintraege: [
+      { titel: 'Impressum', ziel: '/impressum' },
+      { titel: 'Datenschutz', ziel: '/datenschutz' },
+    ],
+  },
+];
+---
+
+<footer class="fuss">
+  <div class="bahn">
+    <div class="fuss__oben">
+      <div class="fuss__marke">
+        <p class="fuss__name">A&D Bedachungen und Spenglerei</p>
+        <p class="fuss__zeile">
+          Dachdeckerei und Spenglerei für Augsburg, Dasing und die Umgebung.
+        </p>
+
+        <ul class="fuss__kontakt">
+          <li>
+            <a href={telLink} class="zahlen">
+              <Icon name="ph:phone-fill" aria-hidden="true" />
+              {betrieb.telefon.anzeige}
+            </a>
+          </li>
+          <li>
+            <a href={mailLink}>
+              <Icon name="ph:envelope-simple-fill" aria-hidden="true" />
+              {betrieb.email}
+            </a>
+          </li>
+          <li>
+            <a href={betrieb.instagram} target="_blank" rel="noopener noreferrer">
+              <Icon name="ph:instagram-logo-fill" aria-hidden="true" />
+              Instagram
+            </a>
+          </li>
+        </ul>
+
+        <p class="fuss__zeiten">{betrieb.oeffnungszeiten.anzeige}</p>
+      </div>
+
+      <nav class="fuss__spalten" aria-label="Fusszeile">
+        {
+          spalten.map((s) => (
+            <div>
+              <h2 class="fuss__spalte-titel">{s.titel}</h2>
+              <ul>
+                {s.eintraege.map((e) => (
+                  <li>
+                    <a href={e.ziel}>{e.titel}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div class="fuss__adressen">
+      {
+        betrieb.standorte.map((s) => (
+          <p>
+            <span class="fuss__rolle">{s.rolle}</span>
+            {s.strasse}, {s.plz} {s.ort}
+          </p>
+        ))
+      }
+    </div>
+
+    <div class="fuss__unten">
+      <p>© {jahr} A&D Bedachungen und Spenglerei</p>
+      <p class="fuss__hinweis">
+        Diese Seite lädt keine Inhalte von Dritten, setzt keine Cookies und verwendet kein
+        Tracking.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .fuss {
+    border-top: 1px solid var(--color-linie);
+    padding-block: clamp(3rem, 6vw, 5rem) 2.5rem;
+    background: var(--color-bitumen);
+  }
+
+  .fuss__oben {
+    display: grid;
+    gap: 2.75rem;
+  }
+
+  .fuss__name {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-stretch: 115%;
+    margin-bottom: 0.5rem;
+  }
+  .fuss__zeile {
+    color: var(--color-kreide);
+    font-size: 0.92rem;
+    max-width: 38ch;
+  }
+
+  .fuss__kontakt {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1.5rem 0 1rem;
+  }
+  .fuss__kontakt a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    transition: color 0.18s ease;
+  }
+  .fuss__kontakt a:hover {
+    color: var(--color-patina);
+  }
+  .fuss__kontakt :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-patina);
+  }
+
+  .fuss__zeiten {
+    font-size: 0.86rem;
+    color: var(--color-schiefer);
+  }
+
+  .fuss__spalten {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.5rem;
+  }
+  .fuss__spalte-titel {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 0.9rem;
+  }
+  .fuss__spalten ul {
+    display: grid;
+    gap: 0.55rem;
+  }
+  .fuss__spalten a {
+    font-size: 0.92rem;
+    color: var(--color-kreide);
+    transition: color 0.18s ease;
+  }
+  .fuss__spalten a:hover {
+    color: var(--color-zinkweiss);
+  }
+
+  .fuss__adressen {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--color-linie);
+    font-size: 0.9rem;
+    color: var(--color-kreide);
+  }
+  .fuss__rolle {
+    display: inline-block;
+    min-width: 5.5rem;
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-weight: 650;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+  }
+
+  .fuss__unten {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+    font-size: 0.8rem;
+    color: var(--color-schiefer);
+  }
+  .fuss__hinweis {
+    max-width: 46ch;
+  }
+
+  @media (min-width: 48rem) {
+    .fuss__spalten {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .fuss__adressen {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .fuss__oben {
+      grid-template-columns: 1fr 1.4fr;
+      gap: 4rem;
+    }
+  }
+</style>

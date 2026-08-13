@@ -1,0 +1,127 @@
+---
+import '../styles/global.css';
+import Kopfzeile from '../components/Kopfzeile.astro';
+import Fusszeile from '../components/Fusszeile.astro';
+import MobilLeiste from '../components/MobilLeiste.astro';
+import Falz from '../components/Falz.astro';
+import SeoSchema from '../components/SeoSchema.astro';
+
+type Props = {
+  titel: string;
+  beschreibung: string;
+  /** Poster des Hero vorladen, nur auf der Startseite sinnvoll. */
+  heroPoster?: boolean;
+  /** Auf Rechtstexten bleibt die Sticky-Kontaktleiste weg. */
+  ohneMobilLeiste?: boolean;
+};
+
+const { titel, beschreibung, heroPoster = false, ohneMobilLeiste = false } = Astro.props;
+const kanonisch = new URL(Astro.url.pathname, Astro.site).href.replace(/\/$/, '') || Astro.site!.href;
+const ogBild = new URL('/media/og-bild.jpg', Astro.site).href;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titel}</title>
+    <meta name="description" content={beschreibung} />
+    <link rel="canonical" href={kanonisch} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="A&D Bedachungen und Spenglerei" />
+    <meta property="og:title" content={titel} />
+    <meta property="og:description" content={beschreibung} />
+    <meta property="og:url" content={kanonisch} />
+    <meta property="og:image" content={ogBild} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#14181A" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {
+      heroPoster && (
+        <>
+          {/* LCP-Kandidat. Das Poster liegt unter dem Canvas und ist sofort da. */}
+          <link
+            rel="preload"
+            as="image"
+            href="/media/hero/poster-quer.webp"
+            media="(min-aspect-ratio: 95/100)"
+            fetchpriority="high"
+          />
+          <link
+            rel="preload"
+            as="image"
+            href="/media/hero/poster-hoch.webp"
+            media="(max-aspect-ratio: 95/100)"
+            fetchpriority="high"
+          />
+        </>
+      )
+    }
+
+    <SeoSchema />
+
+    {/* Markiert die Seite als JavaScript-faehig, bevor der erste Frame malt.
+        Ohne dieses Flag bleiben alle Einblende-Effekte aus, statt Inhalt zu
+        verstecken, den niemand mehr einblendet. */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+
+  <body>
+    <!--
+      THESE: Ein Dachdeckerbetrieb verkauft Dichtigkeit. Diese Seite zeigt sie,
+      statt sie zu behaupten: das Dach schliesst sich beim Scrollen, der Falz am
+      Seitenrand wird beim Lesen zugefalzt. Sie verweigert das uebliche
+      Handwerker-Layout aus Stockfoto-Hero und drei gleichen Leistungskarten.
+      EIGENE WELT: Bitumenschwarz als Grund, Zinkgrau als Flaeche, Kupferpatina
+      als einziger Akzent, Ziegelrot nur als Notfallsignal. Archivo in
+      gestreckter Breite fuer Ueberschriften, Libre Franklin fuer Lauftext.
+      Kanten mit 3 Pixel Radius wie ein Blechzuschnitt, keine Karten mit Schatten.
+      GESCHICHTE: Der Besucher sieht ein Dach entstehen, versteht am Schichtmodell
+      warum es dicht bleibt, erkennt an einem echten Projekt die Ausfuehrung,
+      rechnet seine Groessenordnung aus und ruft an.
+      ERSTER BILDSCHIRM: Bildfuellender Zeitraffer eines Dachstuhls, der sich
+      schliesst. Unten links Ueberschrift, Einordnung und zwei Aktionen.
+      FORM: Stehfalzdeckung als Layoutprinzip. Sektionen sind Bahnen, der
+      Seitenrand ist der Falz.
+    -->
+    <a class="sprungmarke" href="#inhalt">Zum Inhalt springen</a>
+    <Falz />
+    <Kopfzeile />
+    <main id="inhalt">
+      <slot />
+    </main>
+    <Fusszeile />
+    {!ohneMobilLeiste && <MobilLeiste />}
+
+    <script>
+      // Einblenden beim Eintritt. IntersectionObserver statt Scroll-Listener,
+      // und `once`, damit nach dem Einblenden nichts weiterrechnet.
+      const ziele = document.querySelectorAll<HTMLElement>('.eintritt');
+      if (ziele.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const beobachter = new IntersectionObserver(
+          (eintraege) => {
+            for (const e of eintraege) {
+              if (!e.isIntersecting) continue;
+              (e.target as HTMLElement).dataset.sichtbar = 'ja';
+              beobachter.unobserve(e.target);
+            }
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.05 },
+        );
+        ziele.forEach((el) => beobachter.observe(el));
+      } else {
+        ziele.forEach((el) => (el.dataset.sichtbar = 'ja'));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+---
+/**
+ * Das Signaturelement: ein Doppelstehfalz am linken Seitenrand.
+ *
+ * Ein Doppelstehfalz ist die hochgestellte, zweifach umgeschlagene Kante
+ * zwischen zwei Blechbahnen. Hier laeuft er ueber die volle Fensterhoehe.
+ * Beim Scrollen wandert die Falzzange nach unten: was sie passiert hat, ist
+ * geschlossen und faengt Licht auf dem Grat, was darunter liegt, steht noch
+ * als stumpfer Steg offen.
+ *
+ * Angetrieben ausschliesslich von CSS scroll-driven animations, siehe
+ * global.css. Kein JavaScript, kein Scroll-Listener.
+ */
+---
+
+<div class="falz" aria-hidden="true">
+  <div class="falz__steg"></div>
+  <div class="falz__geschlossen"></div>
+  <div class="falz__zange"></div>
+</div>

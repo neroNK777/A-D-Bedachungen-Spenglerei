@@ -1,0 +1,93 @@
+---
+import { betrieb } from '../data/betrieb';
+import { leistungen } from '../data/leistungen';
+import { orte } from '../data/einsatzgebiet';
+
+/**
+ * Strukturierte Daten fuer Google. RoofingContractor mit beiden Adressen,
+ * Oeffnungszeiten und Einsatzgebiet.
+ *
+ * Ein RoofingContractor traegt genau eine `address`. Die zweite Adresse
+ * steht deshalb als eigener Ort in `location`, statt sie zu erfinden oder
+ * wegzulassen.
+ */
+const basis = Astro.site?.href.replace(/\/$/, '') ?? 'https://ad-bedachungen.de';
+const [buero, werkstatt] = betrieb.standorte;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'RoofingContractor',
+  '@id': `${basis}/#betrieb`,
+  name: betrieb.name,
+  url: basis,
+  telephone: betrieb.telefon.anzeige,
+  email: betrieb.email,
+  image: `${basis}/media/og-bild.jpg`,
+  description:
+    'Dachdeckerei und Spenglerei in Augsburg: Steildach, Flachdachabdichtung, Metallfalzdach, Dachrinnen und Spenglerarbeiten.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: buero!.strasse,
+    postalCode: buero!.plz,
+    addressLocality: buero!.ort,
+    addressRegion: 'Bayern',
+    addressCountry: 'DE',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: buero!.geo.lat,
+    longitude: buero!.geo.lon,
+  },
+  location: {
+    '@type': 'Place',
+    name: `${betrieb.name}, Werkstatt`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: werkstatt!.strasse,
+      postalCode: werkstatt!.plz,
+      addressLocality: werkstatt!.ort,
+      addressRegion: 'Bayern',
+      addressCountry: 'DE',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: werkstatt!.geo.lat,
+      longitude: werkstatt!.geo.lon,
+    },
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: betrieb.oeffnungszeiten.schema.map(
+        (t) =>
+          ({
+            Mo: 'Monday',
+            Tu: 'Tuesday',
+            We: 'Wednesday',
+            Th: 'Thursday',
+            Fr: 'Friday',
+          })[t],
+      ),
+      opens: betrieb.oeffnungszeiten.von,
+      closes: betrieb.oeffnungszeiten.bis,
+    },
+  ],
+  areaServed: orte.map((o) => ({ '@type': 'City', name: o.name })),
+  sameAs: [betrieb.instagram],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Leistungen',
+    itemListElement: leistungen.map((l) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: l.titel,
+        description: l.zeile,
+        url: `${basis}/leistungen/${l.slug}`,
+      },
+    })),
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />

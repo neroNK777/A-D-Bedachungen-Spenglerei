@@ -1,0 +1,120 @@
+---
+import { Icon } from 'astro-icon/components';
+import Grundlayout from '../../layouts/Grundlayout.astro';
+import Kontakt from '../../components/Kontakt.astro';
+import { leistungen } from '../../data/leistungen';
+---
+
+<Grundlayout
+  titel="Leistungen | A&D Bedachungen Augsburg"
+  beschreibung="Alle Leistungen in Augsburg: Steildach, Flachdachabdichtung, Metallfalzdach, Dachrinnen, Spenglerarbeiten, Sanierung, Dachfenster und Wartung."
+>
+  <section class="abschnitt kopfblock">
+    <div class="bahn">
+      <h1>Was wir am Dach machen.</h1>
+      <p class="kopfblock__zeile">
+        Neun Leistungen, alle aus einer Hand. Zu jeder steht auf ihrer Seite, was dazugehört
+        und worauf es dabei ankommt.
+      </p>
+    </div>
+  </section>
+
+  <section class="abschnitt liste-abschnitt">
+    <div class="bahn">
+      <ul class="liste">
+        {
+          leistungen.map((l) => (
+            <li class="eintritt">
+              <a href={`/leistungen/${l.slug}`}>
+                <Icon name={l.icon} class="liste__icon" aria-hidden="true" />
+                <span class="liste__text">
+                  <span class="liste__titel">{l.titel}</span>
+                  <span class="liste__zeile">{l.zeile}</span>
+                </span>
+                <Icon name="ph:arrow-right" class="liste__pfeil" aria-hidden="true" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Kontakt />
+</Grundlayout>
+
+<style>
+  .kopfblock {
+    padding-top: clamp(7rem, 14vh, 11rem);
+    padding-bottom: 0;
+  }
+  .kopfblock h1 {
+    font-size: var(--text-seite);
+    line-height: var(--text-seite--line-height);
+    letter-spacing: var(--text-seite--letter-spacing);
+    font-stretch: 118%;
+    max-width: 14ch;
+    margin-bottom: 1.1rem;
+  }
+  .kopfblock__zeile {
+    max-width: 52ch;
+    color: var(--color-kreide);
+  }
+
+  .liste-abschnitt {
+    padding-top: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .liste li + li {
+    border-top: 1px solid var(--color-linie);
+  }
+  .liste a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.5rem 0.6rem 1.5rem 0;
+    transition: background-color 0.18s ease, padding-left 0.18s ease;
+  }
+  .liste a:hover {
+    background: var(--color-zink);
+    padding-left: 0.6rem;
+  }
+  .liste__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-patina);
+  }
+  .liste__titel {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+    font-weight: 700;
+    font-stretch: 112%;
+    letter-spacing: -0.015em;
+  }
+  .liste__zeile {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+    color: var(--color-kreide);
+    max-width: 60ch;
+  }
+  .liste__pfeil {
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--color-schiefer);
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+  .liste a:hover .liste__pfeil {
+    color: var(--color-patina);
+    transform: translateX(4px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .liste a,
+    .liste__pfeil {
+      transition: none;
+    }
+  }
+</style>

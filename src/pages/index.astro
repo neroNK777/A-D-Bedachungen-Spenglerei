@@ -1,0 +1,28 @@
+---
+import Grundlayout from '../layouts/Grundlayout.astro';
+import Hero from '../components/Hero.astro';
+import Leistungen from '../components/Leistungen.astro';
+import DachaufbauExplorer from '../components/DachaufbauExplorer.astro';
+import VorherNachher from '../components/VorherNachher.astro';
+import Kostenrechner from '../components/Kostenrechner.astro';
+import Prozess from '../components/Prozess.astro';
+import Sturmschaden from '../components/Sturmschaden.astro';
+import Einsatzgebiet from '../components/Einsatzgebiet.astro';
+import Kontakt from '../components/Kontakt.astro';
+---
+
+<Grundlayout
+  titel="Dachdecker und Spengler in Augsburg | A&D Bedachungen"
+  beschreibung="Dachdeckerei und Spenglerei in Augsburg und Dasing: Steildach, Flachdach, Metallfalzdach, Dachrinnen und Spenglerarbeiten. Mit Kostenrechner."
+  heroPoster
+>
+  <Hero />
+  <Leistungen />
+  <DachaufbauExplorer />
+  <VorherNachher grenze={4} />
+  <Kostenrechner />
+  <Prozess />
+  <Sturmschaden />
+  <Einsatzgebiet />
+  <Kontakt />
+</Grundlayout>

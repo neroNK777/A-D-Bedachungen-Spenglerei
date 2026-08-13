@@ -1,0 +1,197 @@
+---
+import { Icon } from 'astro-icon/components';
+import { betrieb, telLink, whatsappLink } from '../data/betrieb';
+
+/**
+ * Notfallblock. Einzige Stelle im Projekt, an der Ziegelrot vorkommt.
+ * Es ist kein zweiter Akzent, sondern ein Signal: der Block soll sich vom
+ * Rest der Seite abheben, ohne zu schreien.
+ */
+const sofort = [
+  {
+    icon: 'ph:shield-warning',
+    titel: 'Halten Sie Abstand',
+    text: 'Gelöste Ziegel und Bleche fallen nach. Sperren Sie den Bereich unter der Schadstelle ab und gehen Sie nicht selbst aufs Dach.',
+  },
+  {
+    icon: 'ph:camera',
+    titel: 'Fotografieren Sie',
+    text: 'Vom Boden aus, aus mehreren Richtungen, mit Datum. Ihre Gebäudeversicherung wird danach fragen.',
+  },
+  {
+    icon: 'ph:drop',
+    titel: 'Wasser abfangen',
+    text: 'Innen Eimer und Folie unter die Stelle, Möbel weg. Nasse Dämmung müssen wir sonst später mit austauschen.',
+  },
+];
+
+const waText = 'Sturmschaden am Dach. Adresse: ';
+---
+
+<section class="abschnitt notfall" id="sturmschaden" aria-labelledby="notfall-titel">
+  <div class="bahn">
+    <div class="notfall__kasten eintritt">
+      <div class="notfall__kopf">
+        <div>
+          <h2 id="notfall-titel">
+            <Icon name="ph:lightning-fill" class="notfall__blitz" aria-hidden="true" />
+            Sturmschaden am Dach
+          </h2>
+          <p class="notfall__zeile">
+            Wenn es hereinregnet, zählt die Notabdichtung, nicht das Angebot. Rufen Sie an,
+            dann sehen wir, wie schnell wir da sind.
+          </p>
+        </div>
+
+        <div class="notfall__aktionen">
+          <a class="knopf knopf--ziegel" href={telLink}>
+            <Icon name="ph:phone-fill" aria-hidden="true" />
+            {betrieb.telefon.anzeige}
+          </a>
+          <a
+            class="knopf knopf--rand"
+            href={whatsappLink(waText)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="ph:whatsapp-logo-fill" aria-hidden="true" />
+            WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <div class="notfall__raster">
+        <h3 class="notfall__untertitel">Bis wir da sind</h3>
+        <ul>
+          {
+            sofort.map((s) => (
+              <li>
+                <Icon name={s.icon} class="notfall__icon" aria-hidden="true" />
+                <div>
+                  <p class="notfall__punkt">{s.titel}</p>
+                  <p class="notfall__text">{s.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <p class="notfall__fuss">
+        Erreichbar {betrieb.oeffnungszeiten.anzeige}. Ausserhalb der Zeiten hinterlassen Sie
+        eine Nachricht per WhatsApp, dann sehen wir sie am Morgen zuerst.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .notfall__kasten {
+    background: var(--color-zink);
+    border: 1px solid color-mix(in srgb, var(--color-ziegel) 42%, var(--color-linie));
+    border-radius: var(--radius-bahn);
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .notfall__kopf {
+    display: grid;
+    gap: 1.75rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-linie);
+  }
+
+  .notfall__kopf h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: var(--text-unter);
+    line-height: var(--text-unter--line-height);
+    letter-spacing: var(--text-unter--letter-spacing);
+    margin-bottom: 0.7rem;
+  }
+  .notfall__blitz {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--color-ziegel);
+    flex-shrink: 0;
+  }
+
+  .notfall__zeile {
+    color: var(--color-kreide);
+    max-width: 58ch;
+  }
+
+  .notfall__aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+  .notfall__aktionen :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .notfall__raster {
+    padding-top: 2rem;
+  }
+  .notfall__untertitel {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 650;
+    font-stretch: 100%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-schiefer);
+    margin-bottom: 1.25rem;
+  }
+  .notfall__raster ul {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .notfall__raster li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    align-items: start;
+  }
+  .notfall__icon {
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-top: 0.15rem;
+    color: var(--color-ziegel);
+    flex-shrink: 0;
+  }
+  .notfall__punkt {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 0.98rem;
+    margin-bottom: 0.2rem;
+  }
+  .notfall__text {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-kreide);
+  }
+
+  .notfall__fuss {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-linie);
+    font-size: 0.86rem;
+    color: var(--color-kreide);
+    max-width: 66ch;
+  }
+
+  @media (min-width: 55rem) {
+    .notfall__kopf {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 2.5rem;
+    }
+    .notfall__raster ul {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2rem;
+    }
+  }
+</style>

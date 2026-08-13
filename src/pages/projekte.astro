@@ -1,0 +1,31 @@
+---
+import Grundlayout from '../layouts/Grundlayout.astro';
+import VorherNachher from '../components/VorherNachher.astro';
+import Kontakt from '../components/Kontakt.astro';
+---
+
+<Grundlayout
+  titel="Projekte | A&D Bedachungen Augsburg"
+  beschreibung="Ausgeführte Dacharbeiten aus Augsburg und Umgebung, jeweils vorher und nachher: Falzdach, Flachdachabdichtung, Steildach-Sanierung und Spenglerarbeiten."
+>
+  <div class="projekte-seite">
+    <VorherNachher
+      ebene="h1"
+      ueberschrift="Gebaut, nicht gerendert."
+      einleitung="Jedes Projekt mit Vorher- und Nachher-Bild, den Eckdaten und einem Satz dazu, was das Problem war. Ziehen Sie die Kante quer über das Bild."
+    />
+  </div>
+  <Kontakt />
+</Grundlayout>
+
+<style>
+  .projekte-seite :global(.projekte) {
+    padding-top: clamp(7rem, 14vh, 11rem);
+  }
+  .projekte-seite :global(#projekte-titel) {
+    font-size: var(--text-seite);
+    line-height: var(--text-seite--line-height);
+    letter-spacing: var(--text-seite--letter-spacing);
+    font-stretch: 118%;
+  }
+</style>

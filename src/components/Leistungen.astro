@@ -1,0 +1,235 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import { leistungen } from '../data/leistungen';
+import nachher from '../assets/projekte/walmdach-falz-nachher.jpeg';
+
+/**
+ * Neun Leistungen in zwei fachlichen Gruppen statt einer langen Liste.
+ * Sturmschaden fehlt hier bewusst: der bekommt eine eigene Sektion.
+ */
+const gruppen = [
+  {
+    titel: 'Dachdeckerei',
+    zeile: 'Die Fläche selbst: decken, abdichten, dämmen, in Ordnung halten.',
+    slugs: [
+      'steildach-eindeckung',
+      'flachdachabdichtung',
+      'dachsanierung',
+      'dachfenster',
+      'dachwartung',
+    ],
+  },
+  {
+    titel: 'Spenglerei',
+    zeile: 'Alles aus Blech: Falzdeckung, Rinnen, Anschlüsse, Verwahrungen.',
+    slugs: [
+      'blechdach-und-falzarbeiten',
+      'dachrinnen-und-entwaesserung',
+      'spenglerarbeiten',
+      'fassadenverkleidung',
+    ],
+  },
+];
+
+const holen = (slugs: string[]) =>
+  slugs.map((s) => leistungen.find((l) => l.slug === s)!).filter(Boolean);
+---
+
+<section class="abschnitt leistungen" id="leistungen" aria-labelledby="leistungen-titel">
+  <div class="bahn">
+    <div class="leistungen__kopf eintritt">
+      <h2 id="leistungen-titel">Zwei Gewerke, ein Ansprechpartner.</h2>
+      <p>
+        Dachdeckerei und Spenglerei liegen bei uns in einer Hand. Das spart die Abstimmung
+        zwischen zwei Firmen genau dort, wo Dach und Blech aufeinandertreffen, und dort
+        entstehen die meisten Schäden.
+      </p>
+    </div>
+
+    <div class="leistungen__raster">
+      {
+        gruppen.map((gruppe) => (
+          <div class="gruppe eintritt">
+            <div class="gruppe__kopf">
+              <h3>{gruppe.titel}</h3>
+              <p>{gruppe.zeile}</p>
+            </div>
+            <ul class="gruppe__liste">
+              {holen(gruppe.slugs).map((l) => (
+                <li>
+                  <a href={`/leistungen/${l.slug}`}>
+                    <Icon name={l.icon} class="gruppe__icon" aria-hidden="true" />
+                    <span class="gruppe__text">
+                      <span class="gruppe__titel">{l.titel}</span>
+                      <span class="gruppe__zeile">{l.zeile}</span>
+                    </span>
+                    <Icon name="ph:arrow-right" class="gruppe__pfeil" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+
+      <figure class="leistungen__bild eintritt">
+        <Image
+          src={nachher}
+          alt="Fertig gedecktes Walmdach im dunklen Doppelstehfalz, aufgenommen vom Gerüst aus."
+          widths={[480, 760, 1100]}
+          sizes="(min-width: 62rem) 33vw, 100vw"
+          loading="lazy"
+          class="leistungen__foto"
+        />
+        <figcaption>
+          Doppelstehfalz auf einem Walmdach. Die Scharen werden in Dasing vorgekantet und
+          auf dem Dach geschlossen.
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="leistungen__mehr eintritt">
+      <a class="knopf knopf--rand" href="/leistungen">Alle Leistungen im Detail</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .leistungen__kopf {
+    max-width: 54ch;
+    margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  .leistungen__kopf h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 1rem;
+  }
+  .leistungen__kopf p {
+    color: var(--color-kreide);
+  }
+
+  .leistungen__raster {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .gruppe__kopf {
+    padding-bottom: 1.25rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-patina);
+  }
+  .gruppe__kopf h3 {
+    font-size: 1.35rem;
+    font-stretch: 118%;
+    letter-spacing: 0.005em;
+  }
+  .gruppe__kopf p {
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+    color: var(--color-kreide);
+  }
+
+  .gruppe__liste li + li {
+    border-top: 1px solid var(--color-linie);
+  }
+
+  .gruppe__liste a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 0.9rem;
+    padding: 1.15rem 0.6rem 1.15rem 0;
+    transition: background-color 0.18s ease, padding-left 0.18s ease;
+  }
+  .gruppe__liste a:hover {
+    background: var(--color-zink);
+    padding-left: 0.6rem;
+  }
+
+  .gruppe__icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.15rem;
+    color: var(--color-patina);
+    flex-shrink: 0;
+  }
+
+  .gruppe__text {
+    display: block;
+  }
+  .gruppe__titel {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 108%;
+    font-size: 1.08rem;
+    letter-spacing: -0.005em;
+  }
+  .gruppe__zeile {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--color-kreide);
+  }
+
+  .gruppe__pfeil {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.3rem;
+    color: var(--color-schiefer);
+    transition: color 0.18s ease, transform 0.18s ease;
+  }
+  .gruppe__liste a:hover .gruppe__pfeil {
+    color: var(--color-patina);
+    transform: translateX(3px);
+  }
+
+  .leistungen__bild {
+    margin: 0;
+  }
+  .leistungen__foto {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    /* Die Quelle ist nahezu quadratisch mit viel Himmel oben. Der
+       Ausschnitt wird deshalb nach unten auf das Dach gezogen. */
+    object-position: center 68%;
+    border-radius: var(--radius-bahn);
+  }
+  .leistungen__bild figcaption {
+    margin-top: 0.85rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--color-kreide);
+    max-width: 40ch;
+  }
+
+  .leistungen__mehr {
+    margin-top: 3rem;
+  }
+
+  @media (min-width: 62rem) {
+    .leistungen__raster {
+      /* Ungleiche Spalten: zwei Gruppen und ein schmaleres Bild.
+         Kein Dreiklang gleich breiter Karten. */
+      grid-template-columns: 1.15fr 1fr 0.85fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    .leistungen__bild {
+      position: sticky;
+      top: 6.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gruppe__liste a,
+    .gruppe__pfeil {
+      transition: none;
+    }
+  }
+</style>

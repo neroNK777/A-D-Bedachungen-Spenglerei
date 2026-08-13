@@ -1,0 +1,55 @@
+---
+import Grundlayout from '../layouts/Grundlayout.astro';
+import { betrieb, telLink } from '../data/betrieb';
+---
+
+<Grundlayout
+  titel="Seite nicht gefunden | A&D Bedachungen und Spenglerei"
+  beschreibung="Diese Seite gibt es nicht mehr. Zurück zur Startseite von A&D Bedachungen und Spenglerei in Augsburg."
+>
+  <section class="abschnitt vierhundertvier">
+    <div class="bahn">
+      <p class="vierhundertvier__code zahlen">404</p>
+      <h1>Diese Seite gibt es nicht.</h1>
+      <p class="vierhundertvier__zeile">
+        Vielleicht hat sich die Adresse geändert. Wenn Sie eine Frage zu Ihrem Dach haben,
+        rufen Sie einfach an, das ist schneller als suchen.
+      </p>
+      <div class="vierhundertvier__aktionen">
+        <a class="knopf knopf--patina" href="/">Zur Startseite</a>
+        <a class="knopf knopf--rand zahlen" href={telLink}>{betrieb.telefon.anzeige}</a>
+      </div>
+    </div>
+  </section>
+</Grundlayout>
+
+<style>
+  .vierhundertvier {
+    padding-top: clamp(8rem, 20vh, 14rem);
+    min-height: 70vh;
+  }
+  .vierhundertvier__code {
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    /* Grosse Schrift, Schwelle 3:1. Schiefer erreicht 6,21:1. */
+    color: var(--color-schiefer);
+  }
+  .vierhundertvier h1 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin: 0.75rem 0 1rem;
+  }
+  .vierhundertvier__zeile {
+    max-width: 48ch;
+    color: var(--color-kreide);
+  }
+  .vierhundertvier__aktionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 2rem;
+  }
+</style>
