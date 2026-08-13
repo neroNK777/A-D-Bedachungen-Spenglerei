@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import { Icon } from 'astro-icon/components';
 import { betrieb, telLink } from '../data/betrieb';
+import logo from '../assets/logo/ad-logo-wortmarke.png';
 
 const navigation = [
   { titel: 'Leistungen', ziel: '/leistungen' },
@@ -13,10 +15,15 @@ const navigation = [
 <header class="kopf">
   <div class="bahn kopf__innen">
     <a href="/" class="kopf__marke" aria-label="A&D Bedachungen und Spenglerei, zur Startseite">
-      <span class="kopf__zeichen" aria-hidden="true"></span>
-      <span class="kopf__name">
-        <strong>A&D</strong>
-        <span>Bedachungen und Spenglerei</span>
+      <span class="kopf__logo">
+        <Image
+          src={logo}
+          alt=""
+          widths={[296, 444]}
+          sizes="(min-width: 30rem) 148px, 118px"
+          loading="eager"
+          fetchpriority="high"
+        />
       </span>
     </a>
 
@@ -61,40 +68,24 @@ const navigation = [
     flex-shrink: 0;
   }
 
-  /* Zwei gekantete Scharen, dazwischen der Falz. Das Zeichen ist der Falz
-     selbst, kein Haus-Piktogramm. */
-  .kopf__zeichen {
-    width: 22px;
-    height: 26px;
-    background:
-      linear-gradient(to right, var(--color-falz) 0 2px, transparent 2px) 0 0 / 100% 100%,
-      linear-gradient(
-        to right,
-        var(--color-zink) 0 9px,
-        var(--color-patina) 9px 13px,
-        var(--color-zink) 13px 22px
-      );
-    border-radius: 1px;
-  }
-
-  .kopf__name {
+  /* Das Logo hat einen weissen Grund und bleibt das auch, das ist die
+     Herstellervorgabe. Eine helle Karte mit weichem Schatten praesentiert
+     es bewusst als aufgesetztes Markenzeichen, statt es unpassend auf den
+     dunklen Grund zu zwingen. Radius folgt --radius-bahn wie der Rest der
+     Seite, nur der Schatten ist hier eigens: eine helle Karte auf dunklem
+     Grund braucht Tiefe, keine Kontur. */
+  .kopf__logo {
     display: flex;
-    flex-direction: column;
-    line-height: 1.1;
-    font-family: var(--font-display);
+    align-items: center;
+    background: #fff;
+    border-radius: var(--radius-bahn);
+    padding: 0.3rem 0.55rem;
+    box-shadow: 0 2px 10px color-mix(in srgb, black 35%, transparent);
   }
-  .kopf__name strong {
-    font-size: 1rem;
-    font-weight: 700;
-    font-stretch: 115%;
-    letter-spacing: 0.01em;
-  }
-  .kopf__name span {
-    font-size: 0.66rem;
-    font-stretch: 100%;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--color-kreide);
+  .kopf__logo :global(img) {
+    display: block;
+    height: 30px;
+    width: auto;
   }
 
   .kopf__nav {
@@ -154,6 +145,12 @@ const navigation = [
   /* Auf dem Telefon uebernimmt die Sticky-Leiste unten die Aktionen. */
   .kopf__cta {
     display: none;
+  }
+
+  @media (min-width: 30rem) {
+    .kopf__logo :global(img) {
+      height: 36px;
+    }
   }
 
   @media (min-width: 62rem) {

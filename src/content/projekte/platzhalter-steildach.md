@@ -1,6 +1,6 @@
 ---
 titel: 'Steildach-Sanierung [[BESTÄTIGEN: Projektname]]'
-reihenfolge: 3
+reihenfolge: 4
 ort: '[[BESTÄTIGEN: Ort]]'
 art: '[[BESTÄTIGEN: Art der Arbeit]]'
 material: '[[BESTÄTIGEN: Ziegelart]]'
