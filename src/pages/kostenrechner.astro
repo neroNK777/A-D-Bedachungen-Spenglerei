@@ -1,0 +1,27 @@
+---
+import Grundlayout from '../layouts/Grundlayout.astro';
+import Kostenrechner from '../components/Kostenrechner.astro';
+import Kontakt from '../components/Kontakt.astro';
+---
+
+<Grundlayout
+  titel="Kostenrechner | A&D Bedachungen Augsburg"
+  beschreibung="Kosten für Steildach, Flachdach oder Falzdach überschlagen: Dachform, Fläche, Material und Umfang eingeben, unverbindliche Preisspanne ablesen. Läuft vollständig im Browser."
+>
+  <div class="rechner-seite">
+    <Kostenrechner ebene="h1" />
+  </div>
+  <Kontakt />
+</Grundlayout>
+
+<style>
+  .rechner-seite :global(.rechner) {
+    padding-top: clamp(7rem, 14vh, 11rem);
+  }
+  .rechner-seite :global(#rechner-titel) {
+    font-size: var(--text-seite);
+    line-height: var(--text-seite--line-height);
+    letter-spacing: var(--text-seite--letter-spacing);
+    font-stretch: 118%;
+  }
+</style>

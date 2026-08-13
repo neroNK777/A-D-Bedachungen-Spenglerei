@@ -1,0 +1,140 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Bestaetigen from './Bestaetigen.astro';
+
+/**
+ * Leichte Vorschau statt der vollen Vorher-Nachher-Schieber: nur das
+ * Nachher-Foto als stille Ankuendigung, kein eigenes Skript. Der volle,
+ * interaktive Vergleich fuer alle Projekte lebt unter /projekte
+ * (Komponente VorherNachher.astro).
+ */
+const alle = (await getCollection('projekte')).sort(
+  (a, b) => a.data.reihenfolge - b.data.reihenfolge,
+);
+/** Nur Projekte mit echtem Foto, Platzhalter gehoeren nicht in die Vorschau. */
+const vorschau = alle.filter((p) => p.data.nachher).slice(0, 3);
+---
+
+<section
+  class="abschnitt projekte-vorschau"
+  id="projekte"
+  aria-labelledby="projekte-vorschau-titel"
+>
+  <div class="bahn">
+    <div class="projekte-vorschau__kopf eintritt">
+      <h2 id="projekte-vorschau-titel">Gebaut, nicht gerendert.</h2>
+      <p>
+        Ausgeführte Dacharbeiten aus Augsburg und Umgebung, jeweils vorher und nachher.
+      </p>
+    </div>
+
+    <div class="projekte-vorschau__raster">
+      {
+        vorschau.map((p) => (
+          <a class="karte eintritt" href={`/projekte#${p.id}`}>
+            <Image
+              src={p.data.nachher!}
+              alt={p.data.nachherAlt}
+              widths={[380, 600, 820]}
+              sizes="(min-width: 62rem) 30vw, 90vw"
+              loading="lazy"
+              class="karte__bild"
+            />
+            <span class="karte__unten">
+              <span class="karte__titel">
+                <Bestaetigen text={p.data.titel} />
+              </span>
+              <span class="karte__zeile">Vorher und Nachher ansehen</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <p class="projekte-vorschau__mehr eintritt">
+      <a class="knopf knopf--rand" href="/projekte">Alle Projekte ansehen</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .projekte-vorschau__kopf {
+    max-width: 52ch;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .projekte-vorschau__kopf h2 {
+    font-size: var(--text-titel);
+    line-height: var(--text-titel--line-height);
+    letter-spacing: var(--text-titel--letter-spacing);
+    margin-bottom: 1rem;
+  }
+  .projekte-vorschau__kopf p {
+    color: var(--color-kreide);
+  }
+
+  .projekte-vorschau__raster {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .karte {
+    display: block;
+    border-radius: var(--radius-bahn);
+    overflow: hidden;
+    background: var(--color-zink);
+    border: 1px solid var(--color-linie);
+    transition: border-color 0.18s ease;
+  }
+  .karte:hover {
+    border-color: var(--color-schiefer);
+  }
+  .karte:hover .karte__bild {
+    transform: scale(1.03);
+  }
+
+  .karte__bild {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: center 88%;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .karte__unten {
+    display: block;
+    padding: 1.1rem 1.25rem 1.3rem;
+  }
+  .karte__titel {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-stretch: 112%;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .karte__zeile {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    color: var(--color-patina);
+  }
+
+  .projekte-vorschau__mehr {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  @media (min-width: 55rem) {
+    .projekte-vorschau__raster {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .karte,
+    .karte__bild {
+      transition: none;
+    }
+  }
+</style>

@@ -14,6 +14,14 @@ import {
 } from '../data/kalkulation';
 import { whatsappLink } from '../data/betrieb';
 
+type Props = {
+  /** Auf der Startseiten-Vorschau nicht mehr eingesetzt, auf /kostenrechner h1. */
+  ebene?: 'h2' | 'h1';
+};
+
+const { ebene = 'h2' } = Astro.props;
+const Ueberschrift = ebene;
+
 const dachformen = Object.entries(DACHFORM) as [DachformId, (typeof DACHFORM)[DachformId]][];
 const materialien = Object.entries(MATERIAL) as [MaterialId, (typeof MATERIAL)[MaterialId]][];
 const umfaenge = Object.entries(UMFANG) as [UmfangId, (typeof UMFANG)[UmfangId]][];
@@ -23,7 +31,7 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
 <section class="abschnitt rechner" id="kostenrechner" aria-labelledby="rechner-titel">
   <div class="bahn">
     <div class="rechner__kopf eintritt">
-      <h2 id="rechner-titel">Was kostet das ungefähr?</h2>
+      <Ueberschrift id="rechner-titel">Was kostet das ungefähr?</Ueberschrift>
       <p>
         Vier Angaben genügen für eine Größenordnung. Der Rechner läuft in Ihrem Browser,
         es wird nichts übertragen, solange Sie nicht selbst eine Anfrage abschicken.
@@ -192,7 +200,8 @@ const zusatz = Object.entries(ZUSATZ) as [ZusatzId, (typeof ZUSATZ)[ZusatzId]][]
     max-width: 52ch;
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
   }
-  .rechner__kopf h2 {
+  .rechner__kopf :global(h1),
+  .rechner__kopf :global(h2) {
     font-size: var(--text-titel);
     line-height: var(--text-titel--line-height);
     letter-spacing: var(--text-titel--letter-spacing);

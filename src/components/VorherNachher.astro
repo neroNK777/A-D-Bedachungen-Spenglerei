@@ -50,7 +50,7 @@ const fehlendeAngaben = projekte.filter((p) =>
     <div class="projekte__liste">
       {
         projekte.map((p, i) => (
-          <article class="projekt eintritt">
+          <article class="projekt eintritt" id={p.id}>
             <VergleichSchieber
               vorher={p.data.vorher}
               nachher={p.data.nachher}
@@ -137,6 +137,12 @@ const fehlendeAngaben = projekte.filter((p) =>
   .projekte__liste {
     display: grid;
     gap: clamp(4rem, 9vw, 7rem);
+  }
+
+  .projekt {
+    /* Sprungziel von der Startseiten-Vorschau: nicht unter der fixen
+       Kopfzeile verschwinden. */
+    scroll-margin-top: 6rem;
   }
 
   .projekt__unten {
