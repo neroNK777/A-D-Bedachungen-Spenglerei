@@ -12,19 +12,35 @@ const navigation = [
 ];
 ---
 
-<header class="kopf">
+<header class="kopf" data-kopf>
   <div class="bahn kopf__innen">
-    <a href="/" class="kopf__marke" aria-label="A&D Bedachungen und Spenglerei, zur Startseite">
-      <span class="kopf__logo">
-        <Image
-          src={logo}
-          alt=""
-          widths={[296, 444]}
-          sizes="(min-width: 30rem) 148px, 118px"
-          loading="eager"
-          fetchpriority="high"
-        />
+    {/* Nur auf dem Telefon: die Navigation liegt dort im Klappmenue.
+        Ab 62rem uebernimmt die waagerechte Navigation, der Schalter geht weg. */}
+    <button
+      type="button"
+      class="kopf__schalter"
+      data-kopf-schalter
+      aria-expanded="false"
+      aria-controls="kopf-menue"
+      aria-label="Menü öffnen"
+    >
+      <span class="kopf__striche" aria-hidden="true">
+        <span></span><span></span><span></span>
       </span>
+    </button>
+
+    <a href="/" class="kopf__marke" aria-label="A&D Bedachungen und Spenglerei, zur Startseite">
+      <Image
+        src={logo}
+        alt=""
+        {/* Das Logo laeuft rund 84 bis 101 CSS-Pixel breit (Hoehe 38 bis 46
+            bei Seitenverhaeltnis 2,2). Die Stufen decken damit DPR 1 bis 3 ab. */}
+        widths={[110, 220, 330]}
+        sizes="(min-width: 62rem) 101px, 92px"
+        loading="eager"
+        fetchpriority="high"
+        class="kopf__logo"
+      />
     </a>
 
     <nav class="kopf__nav" aria-label="Hauptnavigation">
@@ -34,12 +50,66 @@ const navigation = [
     <div class="kopf__aktionen">
       <a class="kopf__tel" href={telLink}>
         <Icon name="ph:phone-fill" aria-hidden="true" />
-        <span>{betrieb.telefon.anzeige}</span>
+        <span class="kopf__nummer zahlen">{betrieb.telefon.anzeige}</span>
+        <span class="nur-sr">Anrufen: {betrieb.telefon.anzeige}</span>
       </a>
       <a class="knopf knopf--marke kopf__cta" href="/#kontakt">Anfrage stellen</a>
     </div>
   </div>
+
+  {/* Klappmenue. Ohne JavaScript steht es einfach offen unter der Kopfzeile,
+      damit die Unterseiten auch dann erreichbar bleiben. Das Flag `.js` setzt
+      Grundlayout.astro vor dem ersten Frame, siehe dort. */}
+  <div class="kopf__menue" id="kopf-menue" data-kopf-menue>
+    <nav class="bahn kopf__menue-innen" aria-label="Seitennavigation">
+      {navigation.map((n) => <a href={n.ziel}>{n.titel}</a>)}
+    </nav>
+  </div>
 </header>
+
+<script>
+  const kopf = document.querySelector<HTMLElement>('[data-kopf]');
+  const schalter = document.querySelector<HTMLButtonElement>('[data-kopf-schalter]');
+  const menue = document.querySelector<HTMLElement>('[data-kopf-menue]');
+
+  if (kopf && schalter && menue) {
+    const setze = (offen: boolean) => {
+      kopf.dataset.offen = offen ? 'ja' : 'nein';
+      schalter.setAttribute('aria-expanded', String(offen));
+      schalter.setAttribute('aria-label', offen ? 'Menü schliessen' : 'Menü öffnen');
+    };
+    setze(false);
+
+    schalter.addEventListener('click', () => {
+      setze(kopf.dataset.offen !== 'ja');
+    });
+
+    // Ein Klick auf einen Link fuehrt auf dieselbe Seite, wenn es ein
+    // Sprungziel ist. Dann bleibt das Menue sonst offen stehen.
+    menue.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) setze(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || kopf.dataset.offen !== 'ja') return;
+      setze(false);
+      schalter.focus();
+    });
+
+    // Ausserhalb tippen schliesst.
+    document.addEventListener('click', (e) => {
+      if (kopf.dataset.offen !== 'ja') return;
+      if (!kopf.contains(e.target as Node)) setze(false);
+    });
+
+    // Beim Wechsel auf Desktopbreite aufraeumen, sonst bliebe der Zustand
+    // stehen und der Schalter waere unsichtbar, aber logisch noch offen.
+    const breit = matchMedia('(min-width: 62rem)');
+    breit.addEventListener('change', (e) => {
+      if (e.matches) setze(false);
+    });
+  }
+</script>
 
 <style>
   .kopf {
@@ -51,34 +121,71 @@ const navigation = [
     backdrop-filter: blur(14px);
     border-bottom: 1px solid color-mix(in srgb, var(--color-linie) 70%, transparent);
   }
+  /* Steht das Menue offen, wird der Grund dicht: sonst laeuft der Inhalt
+     der Seite sichtbar hinter den Menuepunkten durch. */
+  .kopf[data-offen='ja'] {
+    background: var(--color-kalk);
+  }
 
   .kopf__innen {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
+    gap: 0.45rem;
     /* Hoehe bleibt unter 80 Pixel, auch mit Schaltflaeche. */
     height: 4.25rem;
+  }
+
+  /* Der Menueschalter: drei Striche, die sich beim Oeffnen zum Kreuz legen. */
+  .kopf__schalter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Volle Tippflaeche nach den ueblichen 44 Pixeln, optisch aber schmal. */
+    width: 2.25rem;
+    height: 2.75rem;
+    margin-left: -0.45rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    color: var(--color-russ);
+  }
+  .kopf__striche {
+    display: grid;
+    gap: 5px;
+    width: 22px;
+  }
+  .kopf__striche span {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transition:
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.15s ease;
+  }
+  .kopf[data-offen='ja'] .kopf__striche span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .kopf[data-offen='ja'] .kopf__striche span:nth-child(2) {
+    opacity: 0;
+  }
+  .kopf[data-offen='ja'] .kopf__striche span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .kopf__marke {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
     flex-shrink: 0;
+    /* Schiebt die Aktionen nach rechts, ohne eine leere Spalte zu brauchen. */
+    margin-right: auto;
   }
 
-  /* Das Logo sitzt direkt auf dem Grund. Solange die Seite dunkel war,
-     brauchte es dafuer eine weisse Karte mit Schatten, weil ein Logo auf
-     weissem Grund sonst wie aufgeklebt wirkte. Mit dem hellen Cremeweiss
-     entfaellt dieser Notbehelf ersatzlos: kein Kasten, kein Schatten. */
+  /* Das Logo sitzt direkt auf dem Grund. Die Datei ist passgenau auf ihren
+     Inhalt beschnitten und transparent, deshalb entspricht die Hoehe hier
+     der tatsaechlich sichtbaren Logohoehe. */
   .kopf__logo {
-    display: flex;
-    align-items: center;
-  }
-  .kopf__logo :global(img) {
     display: block;
-    height: 30px;
+    height: 36px;
     width: auto;
   }
 
@@ -86,6 +193,7 @@ const navigation = [
     display: none;
     gap: 1.75rem;
     font-size: 0.92rem;
+    margin-right: 1.5rem;
   }
   .kopf__nav a {
     color: var(--color-graphit);
@@ -114,51 +222,145 @@ const navigation = [
   .kopf__aktionen {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
+    flex-shrink: 0;
   }
 
+  /* Auf schmalen Telefonen passt die volle Rufnummer nicht neben Schalter,
+     Logo und Schaltflaeche in eine 68 Pixel hohe Zeile. Dort steht sie als
+     Hoerer-Knopf mit voller Tippflaeche, ab 30rem wieder ausgeschrieben.
+     Der Screenreader liest ueber .nur-sr in beiden Faellen die Nummer. */
   .kopf__tel {
-    display: none;
+    display: flex;
     align-items: center;
-    gap: 0.45rem;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 2.25rem;
+    height: 2.5rem;
     font-family: var(--font-display);
-    font-variant-numeric: tabular-nums;
-    font-size: 0.92rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--color-russ);
+    white-space: nowrap;
   }
   .kopf__tel:hover {
     color: var(--color-ziegel);
   }
   .kopf__tel :global(svg) {
-    width: 1rem;
-    height: 1rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
     color: var(--color-ziegel);
   }
-
-  /* Auf dem Telefon uebernimmt die Sticky-Leiste unten die Aktionen. */
-  .kopf__cta {
+  .kopf__nummer {
     display: none;
-    padding: 0.6rem 1.1rem;
-    font-size: 0.88rem;
   }
 
-  @media (min-width: 30rem) {
-    .kopf__logo :global(img) {
-      height: 36px;
+  .kopf__cta {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  /* Das Klappmenue ------------------------------------------------------ */
+  .kopf__menue {
+    border-top: 1px solid var(--color-linie);
+    background: var(--color-kalk);
+  }
+  .kopf__menue-innen {
+    display: grid;
+    padding-block: 0.5rem 1rem;
+  }
+  .kopf__menue-innen a {
+    padding: 0.9rem 0;
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-stretch: 105%;
+    font-size: 1.05rem;
+    color: var(--color-russ);
+  }
+  .kopf__menue-innen a + a {
+    border-top: 1px solid var(--color-linie);
+  }
+
+  /* Mit JavaScript klappt das Menue zu und faehrt beim Oeffnen auf. Ohne
+     JavaScript bleibt es offen stehen, damit die Unterseiten erreichbar sind. */
+  :global(.js) .kopf__menue {
+    position: absolute;
+    inset: 100% 0 auto 0;
+    /* visibility statt display: nimmt die Links aus der Tabreihenfolge und
+       laesst den Uebergang trotzdem laufen. */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.18s ease,
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0.22s;
+  }
+  :global(.js) .kopf[data-offen='ja'] .kopf__menue {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (min-width: 26rem) {
+    .kopf__logo {
+      height: 40px;
+    }
+    .kopf__innen {
+      gap: 0.6rem;
+    }
+    .kopf__cta {
+      padding: 0.55rem 0.9rem;
+      font-size: 0.82rem;
     }
   }
 
+  /* Ab hier ist Platz fuer die ausgeschriebene Rufnummer. */
+  @media (min-width: 30rem) {
+    .kopf__nummer {
+      display: inline;
+    }
+    .kopf__tel {
+      width: auto;
+      font-size: 0.86rem;
+    }
+    .kopf__tel :global(svg) {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  /* Ab hier traegt die waagerechte Navigation, der Schalter und das
+     Klappmenue entfallen ersatzlos. */
   @media (min-width: 62rem) {
-    .kopf__nav,
-    .kopf__tel,
-    .kopf__cta {
+    .kopf__schalter,
+    .kopf__menue {
+      display: none;
+    }
+    .kopf__nav {
       display: flex;
+    }
+    .kopf__logo {
+      height: 46px;
+    }
+    .kopf__aktionen {
+      gap: 1rem;
+    }
+    .kopf__tel {
+      font-size: 0.92rem;
+      gap: 0.45rem;
+    }
+    .kopf__cta {
+      padding: 0.6rem 1.1rem;
+      font-size: 0.88rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .kopf__nav a::after {
+    .kopf__nav a::after,
+    .kopf__striche span,
+    :global(.js) .kopf__menue {
       transition: none;
     }
   }

@@ -54,8 +54,13 @@ const holen = (slugs: string[]) =>
                   ))}
                 </ul>
 
+                {/* Sichtbar kurz, damit der Knopf die Kartenspalte auf dem
+                    Telefon nicht sprengt: ".knopf" laeuft bewusst mit
+                    white-space: nowrap, und "Mehr zu Dachrinnen und
+                    Entwaesserung" passt dort nicht. Vorlesehilfen bekommen
+                    den vollen Bezug ueber den unsichtbaren Zusatz. */}
                 <a class="knopf knopf--rand karte__link" href={`/leistungen/${l.slug}`}>
-                  <span>Mehr zu {l.titel}</span>
+                  <span>Mehr erfahren<span class="nur-sr"> zu {l.titel}</span></span>
                   <Icon name="ph:arrow-right" aria-hidden="true" />
                 </a>
               </article>
@@ -117,6 +122,9 @@ const holen = (slugs: string[]) =>
 
   .karte {
     display: grid;
+    /* Ohne das kann ein breiter Inhalt das Rasterfeld aufziehen, statt
+       sich darin zu beschraenken. */
+    min-width: 0;
     gap: 1rem;
     background: var(--color-putz);
     border: 1px solid var(--color-linie);
