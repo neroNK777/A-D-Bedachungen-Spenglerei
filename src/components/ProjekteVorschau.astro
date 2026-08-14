@@ -39,7 +39,9 @@ const vorschau = alle.filter((p) => p.data.nachher).slice(0, 3);
               widths={[380, 600, 820]}
               sizes="(min-width: 62rem) 30vw, 90vw"
               loading="lazy"
+              decoding="async"
               class="karte__bild"
+              data-bild
             />
             <span class="karte__unten">
               <span class="karte__titel">
@@ -57,6 +59,25 @@ const vorschau = alle.filter((p) => p.data.nachher).slice(0, 3);
     </p>
   </div>
 </section>
+
+<script>
+  /**
+   * Die Fotos haengen an `loading="lazy"` und stehen deshalb oft erst
+   * bereit, wenn die Karte laengst eingeblendet ist. Ohne Zutun springt
+   * das Bild dann hart in die fertige Karte. Hier bekommt jedes Bild
+   * beim Laden ein Flag, das CSS blendet es weich auf.
+   */
+  for (const bild of document.querySelectorAll<HTMLImageElement>('[data-bild]')) {
+    const fertig = () => (bild.dataset.geladen = 'ja');
+    // Aus dem Cache ist das Bild schon da, bevor der Listener haengt.
+    if (bild.complete) fertig();
+    else {
+      bild.addEventListener('load', fertig, { once: true });
+      // Auch bei einem Fehler aufblenden, sonst bliebe die Karte leer.
+      bild.addEventListener('error', fertig, { once: true });
+    }
+  }
+</script>
 
 <style>
   .projekte-vorschau__kopf {
@@ -100,6 +121,27 @@ const vorschau = alle.filter((p) => p.data.nachher).slice(0, 3);
     object-fit: cover;
     object-position: center 88%;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Nachgeladene Fotos weich aufblenden, statt sie hart in die fertige
+     Karte springen zu lassen. Das Flag setzt das Skript unten beim
+     load-Ereignis. Ohne JavaScript greift nichts davon und die Bilder
+     stehen wie gehabt sofort da. */
+  :global(.js) .karte__bild[data-bild] {
+    opacity: 0;
+    transition:
+      opacity 0.55s ease,
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  :global(.js) .karte__bild[data-geladen='ja'] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .karte__bild[data-bild] {
+      opacity: 1;
+      transition: none;
+    }
   }
 
   .karte__unten {

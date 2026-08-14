@@ -23,7 +23,8 @@ const mitte = (schichten.length - 1) / 2;
           <h2 id="aufbau-titel">Ein Dach besteht aus acht Schichten. Sieben sieht niemand.</h2>
           <p class="aufbau__intro">
             Was von der Strasse aus zu sehen ist, hält den Regen nur ab. Dicht bleibt das
-            Dach durch das, was darunter liegt. Tippen Sie eine Schicht an.
+            Dach durch das, was darunter liegt.<span class="aufbau__hinweis">
+              Scrollen Sie weiter, oder tippen Sie eine Schicht an.</span>
           </p>
 
           {/* Kein aria-live: der Scroll wechselt die Schicht bis zu achtmal
@@ -104,10 +105,18 @@ const mitte = (schichten.length - 1) / 2;
     });
 
     const wenigerBewegung = matchMedia('(prefers-reduced-motion: reduce)');
-    /* Kleine, flache Schirme fassen den gepinnten Aufbau nicht. Dort laeuft
-       die Sektion normal mit und der Aufbau liegt von Anfang an offen;
-       erkunden laesst er sich weiter per Tipp. Siehe gleiche Abfrage im CSS. */
-    const zuFlach = matchMedia('(max-height: 700px) and (max-width: 61.99rem)');
+    /* Nur noch wirklich flache Fenster, im Wesentlichen quer gehaltene
+       Telefone. Dort laeuft die Sektion normal mit und der Aufbau liegt von
+       Anfang an offen; erkunden laesst er sich per Tipp.
+
+       Die Grenze lag zuvor bei 700px und war damit viel zu hoch: ein
+       iPhone SE (667) oder ein 13 mini mit eingeblendeter Adressleiste
+       (693) fiel darunter, und dann war das Scrollen komplett
+       abgeschaltet - genau der Fehler, dass sich auf dem Telefon nichts
+       tat und nur das Antippen half. Damit die Buehne jetzt auch auf
+       kurzen Schirmen hineinpasst, macht das CSS sie dort kompakt.
+       Gleiche Abfrage im CSS. */
+    const zuFlach = matchMedia('(max-height: 560px) and (max-width: 61.99rem)');
 
     /** Ruhezustand und voll aufgefaechert. Nie ganz zu, sonst steht am
         Sektionsanfang ein flacher Balken statt eines Schichtaufbaus. */
@@ -190,6 +199,11 @@ const mitte = (schichten.length - 1) / 2;
     max-width: 46ch;
     color: var(--color-graphit);
     font-size: 0.98rem;
+  }
+  .aufbau__hinweis::before {
+    /* Trennt den Bedienhinweis vom Fliesstext, ohne ein zweites Absatz-
+       element und dessen Aussenabstand zu brauchen. */
+    content: ' ';
   }
 
   /* Tafel: alle Erklaerungen liegen uebereinander, nur eine ist sichtbar.
@@ -403,6 +417,73 @@ const mitte = (schichten.length - 1) / 2;
     }
   }
 
+  /* Kurze Telefone: die Buehne baut in voller Groesse rund 820 Pixel hoch
+     und passt damit weder in 667 noch in 700 Pixel Fensterhoehe. Statt das
+     Pinning dort abzuschalten (was das Scrollen wirkungslos machte), wird
+     sie hier so weit eingedampft, dass sie hineinpasst. */
+  @media (max-height: 800px) and (max-width: 61.99rem) {
+    .aufbau__buehne {
+      padding-block: 4.75rem 3.5rem;
+      /* Flacherer Ausschlag, dadurch braucht der Stapel weniger Luft. */
+      --dehnung: 0.5px;
+    }
+    .aufbau__innen {
+      gap: 1rem;
+    }
+    .aufbau__text h2 {
+      font-size: 1.32rem;
+      margin-bottom: 0.55rem;
+    }
+    .aufbau__intro {
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .stapel {
+      margin-block: 1.6rem;
+    }
+    .aufbau__tafel {
+      min-height: 9.25rem;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+    }
+    .tafel__titel {
+      font-size: 1.15rem;
+      margin-bottom: 0.35rem;
+    }
+    .tafel__text {
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .tafel__mass {
+      font-size: 0.72rem;
+      margin-bottom: 0.3rem;
+    }
+  }
+
+  /* Noch kuerzer, etwa iPhone SE: der erklaerende Vorspann weicht, die
+     Sache selbst bleibt. Der Bedienhinweis ist hier ohnehin entbehrlich,
+     weil der Scroll die Schichten von allein durchlaeuft. */
+  @media (max-height: 710px) and (max-width: 61.99rem) {
+    .aufbau__intro {
+      display: none;
+    }
+    .aufbau__text h2 {
+      font-size: 1.22rem;
+    }
+    .aufbau__tafel {
+      min-height: 8.75rem;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+    .stapel {
+      margin-block: 1.25rem;
+    }
+    .aufbau__buehne {
+      padding-block: 4.6rem 3.25rem;
+    }
+  }
+
   @media (min-width: 62rem) {
     .aufbau__innen {
       grid-template-columns: 1fr 0.9fr;
@@ -443,11 +524,12 @@ const mitte = (schichten.length - 1) / 2;
   }
 
   /* Kein Pinning, wo es nicht hinpasst: bei abgeschalteter Bewegung und auf
-     kleinen, flachen Schirmen laeuft die Sektion normal mit. Der Aufbau
-     liegt dann von Anfang an offen, erkunden geht weiter per Tipp.
-     Dieselbe Abfrage steht im Skript. */
+     wirklich flachen Fenstern (quer gehaltene Telefone) laeuft die Sektion
+     normal mit. Der Aufbau liegt dann von Anfang an offen, erkunden geht
+     weiter per Tipp. Dieselbe Abfrage steht im Skript, dort auch die
+     Begruendung fuer die Grenze. */
   @media (prefers-reduced-motion: reduce),
-    ((max-height: 700px) and (max-width: 61.99rem)) {
+    ((max-height: 560px) and (max-width: 61.99rem)) {
     :global(.js) .aufbau__strecke {
       height: auto;
       min-height: 0;

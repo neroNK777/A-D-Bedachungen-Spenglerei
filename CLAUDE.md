@@ -505,6 +505,26 @@ In Chromium mobil durchgemessen (Buehne bleibt bei `top: 0`, `--spread`
 läuft 4 → 16, aktive Schicht wandert bis zur letzten durch); Chromium hatte
 den Bug nie, ein echter iOS-Test bleibt offen (siehe Punkt oben).
 
+**Der eigentliche Grund war aber ein zweiter, und der wog schwerer.** Die
+Notbremse `(max-height: 700px) and (max-width: 61.99rem)` schaltete das
+Pinning und die ganze Scrollsteuerung ab, weil die Buehne in voller Groesse
+rund 820 Pixel hoch baut und in kurze Fenster nicht passt. 700 Pixel ist
+aber keine Ausnahme, sondern Alltag: ein iPhone SE hat 667, ein 13 mini mit
+eingeblendeter Adressleiste rund 693. Auf genau diesen Geraeten passierte
+beim Scrollen nichts mehr, es blieb nur das Antippen — der gemeldete
+Fehler. Nachgestellt und bestaetigt bei 375×667 und 375×693.
+
+Fix: die Buehne wird auf kurzen Schirmen kompakt statt abgeschaltet. Zwei
+Stufen in `DachaufbauExplorer.astro` (`max-height: 800px` und `710px`)
+ziehen Innenabstaende, Ueberschrift, Tafelhoehe und den Ausschlag
+(`--dehnung`) zurueck; unter 710 Pixel weicht zusaetzlich der Vorspann.
+Damit sinkt die noetige Hoehe von 820 auf 585 Pixel. Die Notbremse greift
+jetzt erst bei `max-height: 560px`, also im Wesentlichen quer gehaltenen
+Telefonen. Gemessen bei 640, 667, 693, 740, 745, 780 und 844 Pixel
+Fensterhoehe: ueberall wandern die Schichten beim Scrollen durch, und der
+Inhalt bleibt zwischen fixer Kopfzeile und Sticky-Leiste vollstaendig
+sichtbar.
+
 ---
 
 ## 11. Regeln für spätere Änderungen
